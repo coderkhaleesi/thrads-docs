@@ -1,94 +1,31 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
-    },
-    "version": "1.0.0"
+    "title": "",
+    "version": "0.0.0"
   },
   "servers": [
     {
-      "url": "http://sandbox.mintlify.com"
-    }
-  ],
-  "security": [
-    {
-      "bearerAuth": []
+      "url": "https://api.thrads.ai"
     }
   ],
   "paths": {
-    "/plants": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
+    "/developer/serve-sponsored-questions/": {
+      "post": {
+        "operationId": "developer_serve_sponsored_questions_create",
+        "description": "Generate sponsored question",
+        "tags": ["developer"],
+        "security": [
+          { "thradsApiKey": [] },
+          {}
         ],
         "responses": {
           "200": {
-            "description": "Plant response",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "description": "Creates a new plant in the store",
-        "requestBody": {
-          "description": "Plant to add to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Plant"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/DeveloperResponse"
                 }
               }
             }
@@ -96,57 +33,45 @@
         }
       }
     },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "webhooks": {
-    "/plant/webhook": {
+    "/developer/serve-sponsored-questions/click/": {
       "post": {
-        "description": "Information about a new plant added to the store",
+        "operationId": "developer_serve_sponsored_questions_click_create",
+        "description": "Register a click for a sponsored question using a signed token.",
+        "tags": ["developer"],
         "requestBody": {
-          "description": "Plant added to the store",
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewPlant"
+                "$ref": "#/components/schemas/SponsoredQuestionClickInput"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/SponsoredQuestionClickInput"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/SponsoredQuestionClickInput"
               }
             }
           }
         },
+        "security": [
+          { "jwtAuth": [] },
+          {}
+        ],
         "responses": {
           "200": {
-            "description": "Return a 200 status to indicate that the data was received successfully"
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SponsoredQuestionClickInput"
+                }
+              }
+            }
           }
         }
       }
@@ -154,63 +79,74 @@
   },
   "components": {
     "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
+      "DeveloperResponse": {
         "type": "object",
         "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
+          "apiVersion": { "type": "string", "example": "1.0" },
+          "requestId": { "type": "string", "example": "req_123456" },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "status": { "type": "string", "enum": ["success", "error"] },
+          "message": { "type": "string", "nullable": true },
+          "adStatus": { "type": "string", "nullable": true, "description": "Specific status for ad-related responses (served, not_found, not_eligible)" },
+          "data": { 
+            "oneOf": [
+              { "$ref": "#/components/schemas/SponsoredQuestion" },
+              { "type": "null" }
+            ]
           },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
-          }
-        }
+          "errors": { "type": "object", "nullable": true },
+          "totalTime": { "type": "number", "nullable": true },
+          "documentationUrl": { "type": "string", "format": "uri", "nullable": true }
+        },
+        "required": ["apiVersion", "requestId", "timestamp", "status"]
       },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
-          },
-          {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
-            }
-          }
-        ]
-      },
-      "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
+      "SponsoredQuestion": {
         "type": "object",
+        "description": "Serializer for SponsoredQuestion model.",
         "properties": {
-          "error": {
-            "type": "integer",
-            "format": "int32"
+          "icon_url": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true
           },
-          "message": {
+          "brand": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 100
+          },
+          "keyword_search": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 100
+          },
+          "question": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 500
+          },
+          "token": {
+            "type": "string",
+            "readOnly": true
+          }
+        },
+        "required": ["question", "token"]
+      },
+      "SponsoredQuestionClickInput": {
+        "type": "object",
+        "description": "Input serializer for sponsored question click events.\nValidates the token and extracts the event_id.",
+        "properties": {
+          "token": {
             "type": "string"
           }
-        }
+        },
+        "required": ["token"]
       }
     },
     "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
+      "thradsApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Thrads-Api-Key"
       }
     }
   }

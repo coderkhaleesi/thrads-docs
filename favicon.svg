@@ -1,19 +1,11 @@
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M9.06145 23.1079C5.26816 22.3769 -3.39077 20.6274 1.4173 5.06384C9.6344 6.09939 16.9728 14.0644 9.06145 23.1079Z" fill="url(#paint0_linear_17557_2021)"/>
-<path d="M8.91928 23.0939C5.27642 21.2223 0.78371 4.20891 17.0071 0C20.7569 7.19341 19.6212 16.5452 8.91928 23.0939Z" fill="url(#paint1_linear_17557_2021)"/>
-<path d="M8.91388 23.0788C8.73534 19.8817 10.1585 9.08525 23.5699 13.1107C23.1812 20.1229 18.984 26.4182 8.91388 23.0788Z" fill="url(#paint2_linear_17557_2021)"/>
-<defs>
-<linearGradient id="paint0_linear_17557_2021" x1="3.77557" y1="5.91571" x2="5.23185" y2="21.5589" gradientUnits="userSpaceOnUse">
-<stop stop-color="#18E299"/>
-<stop offset="1" stop-color="#15803D"/>
-</linearGradient>
-<linearGradient id="paint1_linear_17557_2021" x1="12.1711" y1="-0.718425" x2="10.1897" y2="22.9832" gradientUnits="userSpaceOnUse">
-<stop stop-color="#16A34A"/>
-<stop offset="1" stop-color="#4ADE80"/>
-</linearGradient>
-<linearGradient id="paint2_linear_17557_2021" x1="23.1327" y1="15.353" x2="9.33841" y2="18.5196" gradientUnits="userSpaceOnUse">
-<stop stop-color="#4ADE80"/>
-<stop offset="1" stop-color="#0D9373"/>
-</linearGradient>
-</defs>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" width="80" height="80"><svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M76 6H4V13H76V6Z" fill="#F15737"></path>
+<path d="M76 19H4V26H76V19Z" fill="#F15737"></path>
+<path d="M76 32H4V39H76V32Z" fill="#F15737"></path>
+<path d="M69.4 75.3731L69.4 32L66.1 32L62.8 32L62.8 75.3731L69.4 75.3731Z" fill="#F15737"></path>
+<path d="M56.2 75.3731L56.2 32L52.9 32L49.6 32L49.6 75.3731L56.2 75.3731Z" fill="#F15737"></path>
+<path d="M43 75.3731L43 32L39.7 32L36.4 32L36.4 75.3731L43 75.3731Z" fill="#F15737"></path>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M22.8586 75.3731H43L43 75.3731L22.8586 75.3731ZM13.5248 75.3731L37.8979 51L40.2313 53.3335L42.5648 55.6669L22.8586 75.3731H13.5248ZM4.63016 75.3731H4.00001V66.6694L34.6694 36L37.0028 38.3335L39.3363 40.6669L4.63016 75.3731ZM4 47.9331V32H4.00001V47.9331L4 47.9331ZM4.00001 57.2669L23.6 37.6669L21.2666 35.3335L18.9331 33L4.00001 47.9331V53.6865V57.2669Z" fill="#F15737"></path>
+</svg><style>@media (prefers-color-scheme: light) { :root { filter: none; } }
+@media (prefers-color-scheme: dark) { :root { filter: none; } }
+</style></svg>
