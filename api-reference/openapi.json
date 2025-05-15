@@ -25,9 +25,35 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DeveloperResponse"
+                  "$ref": "#/components/schemas/DeveloperSuccessResponse"
                 }
               }
+            }
+          },
+          "400": {
+            "description": "Invalid token",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DeveloperErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/DeveloperErrorResponse" } }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/DeveloperErrorResponse" } }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/DeveloperErrorResponse" } }
             }
           }
         }
@@ -45,32 +71,44 @@
               "schema": {
                 "$ref": "#/components/schemas/SponsoredQuestionClickInput"
               }
-            },
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "$ref": "#/components/schemas/SponsoredQuestionClickInput"
-              }
-            },
-            "multipart/form-data": {
-              "schema": {
-                "$ref": "#/components/schemas/SponsoredQuestionClickInput"
-              }
             }
           }
         },
-        "security": [
-          { "jwtAuth": [] },
-          {}
-        ],
         "responses": {
           "200": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SponsoredQuestionClickInput"
-                }
+                  "$ref": "#/components/schemas/DeveloperSuccessResponseNullData"
               }
+            }
+           }
+          },
+          "400": {
+            "description": "Invalid token",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DeveloperErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/DeveloperErrorResponse" } }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/DeveloperErrorResponse" } }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/DeveloperErrorResponse" } }
             }
           }
         }
@@ -79,27 +117,81 @@
   },
   "components": {
     "schemas": {
-      "DeveloperResponse": {
+      "DeveloperSuccessResponse": {
         "type": "object",
         "properties": {
-          "apiVersion": { "type": "string", "example": "1.0" },
-          "requestId": { "type": "string", "example": "req_123456" },
-          "timestamp": { "type": "string", "format": "date-time" },
-          "status": { "type": "string", "enum": ["success", "error"] },
-          "message": { "type": "string", "nullable": true },
-          "adStatus": { "type": "string", "nullable": true, "description": "Specific status for ad-related responses (served, not_found, not_eligible)" },
-          "data": { 
-            "oneOf": [
-              { "$ref": "#/components/schemas/SponsoredQuestion" },
-              { "type": "null" }
-            ]
-          },
-          "errors": { "type": "object", "nullable": true },
-          "totalTime": { "type": "number", "nullable": true },
-          "documentationUrl": { "type": "string", "format": "uri", "nullable": true }
+          "apiVersion": { "type": "string", "example": "1.0", "description": "API version" },
+          "requestId": { "type": "string", "example": "req_123456", "description": "Request ID" },
+          "timestamp": { "type": "string", "format": "date-time", "description": "Timestamp of the request" },
+          "data": {
+                  "oneOf": [
+                    { "$ref": "#/components/schemas/SponsoredQuestion" },
+                    { "type": "null" }
+                  ],
+                  "description": "Response data including the sponsored question and its attributes"
+                },
+          "status": { "type": "string", "enum": ["success", "error"], "description": "Always 'success' for success responses" },
+          "message": { "type": "string", "nullable": true, "description": "Success message" },
+          "totalTime": { "type": "number", "nullable": true, "description": "Total time taken to process the request" },
+          "documentationUrl": { "type": "string", "format": "uri", "nullable": true, "description": "Documentation URL" }
         },
-        "required": ["apiVersion", "requestId", "timestamp", "status"]
+        "required": [
+          "apiVersion",
+          "requestId",
+          "timestamp",
+          "status",
+          "data",
+          "message",
+          "totalTime",
+          "documentationUrl"
+        ]
       },
+      "DeveloperErrorResponse": {
+        "type": "object",
+        "properties": {
+          "apiVersion": { "type": "string", "example": "1.0", "description": "API version" },
+          "requestId": { "type": "string", "example": "req_123456", "description": "Request ID" },
+          "timestamp": { "type": "string", "format": "date-time", "description": "Timestamp of the request" },
+          "status": { "type": "string", "enum": ["error"], "description": "Always 'error' for error responses" },
+          "message": { "type": "string", "nullable": true, "description": "Error message" },
+          "error": { "type": "string", "nullable": true },
+          "totalTime": { "type": "number", "nullable": true },
+          "documentationUrl": { "type": "string", "format": "uri", "nullable": true, "description": "Documentation URL" }
+        },
+        "required": [
+          "apiVersion",
+          "requestId",
+          "timestamp",
+          "status",
+          "message",
+          "error",
+          "totalTime",
+          "documentationUrl"
+        ]
+      },
+      "DeveloperSuccessResponseNullData": {
+        "type": "object",
+        "properties": {
+          "apiVersion": { "type": "string", "example": "1.0", "description": "API version" },
+          "requestId": { "type": "string", "example": "req_123456", "description": "Request ID" },
+          "timestamp": { "type": "string", "format": "date-time", "description": "Timestamp of the request" },
+          "status": { "type": "string", "enum": ["success", "error"], "description": "Always 'success' for success responses" },
+          "data": { "type": "null", "description": "No data returned for click event" },
+          "message": { "type": "string", "nullable": true, "description": "Success message" },
+          "totalTime": { "type": "number", "nullable": true, "description": "Total time taken to process the request" },
+          "documentationUrl": { "type": "string", "format": "uri", "nullable": true, "description": "Documentation URL" }
+        },
+        "required": [
+          "apiVersion",
+          "requestId",
+          "timestamp",
+          "status",
+          "data",
+          "message",
+          "totalTime",
+          "documentationUrl"
+              ]
+            },
       "SponsoredQuestion": {
         "type": "object",
         "description": "Serializer for SponsoredQuestion model.",
@@ -107,36 +199,36 @@
           "icon_url": {
             "type": "string",
             "format": "uri",
-            "nullable": true
+            "nullable": true,
+            "description": "Icon URL"
           },
           "brand": {
             "type": "string",
-            "nullable": true,
-            "maxLength": 100
+            "description": "Brand name"
           },
           "keyword_search": {
             "type": "string",
             "nullable": true,
-            "maxLength": 100
+            "description": "Keyword search that maps to the sponsored question in standard search bars"
           },
           "question": {
             "type": "string",
-            "minLength": 10,
-            "maxLength": 500
+            "description": "Sponsored question"
           },
           "token": {
             "type": "string",
-            "readOnly": true
+            "readOnly": true,
+            "description": "Token to be used for click tracking"
           }
         },
         "required": ["question", "token"]
       },
       "SponsoredQuestionClickInput": {
         "type": "object",
-        "description": "Input serializer for sponsored question click events.\nValidates the token and extracts the event_id.",
         "properties": {
           "token": {
-            "type": "string"
+            "type": "string",
+            "description": "Token to be used for click tracking"
           }
         },
         "required": ["token"]

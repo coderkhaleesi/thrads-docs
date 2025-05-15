@@ -1,3 +1,8 @@
 .rounded-img {
     border-radius: 16px;
   }
+
+  .nav-logo {
+    height: 35px !important; /* Or your desired height, e.g., 2.5rem, 40px */
+    width: auto !important;   /* Ensures width adjusts to new height while maintaining aspect ratio */
+  }
