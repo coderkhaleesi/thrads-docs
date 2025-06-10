@@ -74,7 +74,7 @@
         }
       }
     },
-    "/developer/serve-sponsored-question/": {
+    "/developer/serve-sponsored-questions/": {
       "post": {
         "operationId": "developer_serve_sponsored_question_create",
         "description": "Generate sponsored question",
