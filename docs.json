@@ -22,8 +22,15 @@
           {
             "group": "Endpoints",
             "pages": [
-              "api-reference/endpoint/create",
+              "api-reference/endpoint/serve_ad",
+              "api-reference/endpoint/sponsored_q",
               "api-reference/endpoint/delete"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              
             ]
           }
         ]

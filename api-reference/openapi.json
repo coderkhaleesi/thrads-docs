@@ -10,6 +10,70 @@
     }
   ],
   "paths": {
+    "/developer/serve-ad/": {
+      "post": {
+        "operationId": "developer_serve_ad_create",
+        "description": "Serve contextual ads based on conversation content and user data",
+        "tags": ["developer"],
+        "security": [
+          { "thradsApiKey": [] }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServeAdRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ad request processed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServeAdResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid input data",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DeveloperErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid API key",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/DeveloperErrorResponse" } }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Access denied",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/DeveloperErrorResponse" } }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/DeveloperErrorResponse" } }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/DeveloperErrorResponse" } }
+            }
+          }
+        }
+      }
+    },
     "/developer/serve-sponsored-questions/": {
       "post": {
         "operationId": "developer_serve_sponsored_questions_create",
@@ -117,6 +181,168 @@
   },
   "components": {
     "schemas": {
+      "ServeAdRequest": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "The unique identifier for the user must be distinct for each individual and remain consistent across sessions for the same user"
+          },
+          "chatId": {
+            "type": "string", 
+            "description": "The unique identifier for the chat must be distinct for each chat and remain consistent throughout the conversation"
+          },
+          "userRegion": {
+            "type": "string",
+            "nullable": true,
+            "description": "The user's region, specified as a two-letter country code (ISO 3166-1 alpha-2), e.g., 'US', 'GB', 'IT'. If left blank, ads targeted to specific regions will not be served, potentially reducing your monetization",
+            "pattern": "^[A-Z]{2}$"
+          },
+          "metaData": {
+            "type": "object",
+            "nullable": true,
+            "description": "A object containing metadata about the user, such as age, gender, and other demographic information - this is optional but recommended to improve targeting and thus conversions"
+          },
+          "content": {
+            "type": "object",
+            "properties": {
+              "user": {
+                "type": "string",
+                "description": "The last message sent by the user"
+              },
+              "chatbot": {
+                "type": "string", 
+                "description": "The last message sent by the chatbot"
+              }
+            },
+            "required": ["user", "chatbot"],
+            "description": "A object containing the latest messages"
+          },
+          "production": {
+            "type": "boolean",
+            "default": false,
+            "description": "Set to True if the request is coming from a production environment"
+          },
+          "force": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "A flag to force ad serving/suppression. If set to false, ads will be suppressed. If set to true, ads will be served regardless of the user's intent or other developer settings"
+          },
+          "conversationOffset": {
+            "type": "integer",
+            "default": 2,
+            "minimum": 0,
+            "description": "Minimum number of turns to wait before the first ad is returned. The initial messages provide context about the user and their intentions, leading to better targeting"
+          },
+          "adFrequencyLimit": {
+            "type": "integer", 
+            "default": 5,
+            "minimum": 1,
+            "description": "Minimum number of turns to wait between ads"
+          },
+          "adAggressiveness": {
+            "type": "string",
+            "enum": ["low", "medium", "high"],
+            "default": "high",
+            "description": "Set to 'low' for strict matching with strong relevance or 'medium' for a more flexible match"
+          }
+        },
+        "required": ["userId", "chatId", "content"]
+      },
+      "ServeAdResponse": {
+        "type": "object",
+        "properties": {
+          "apiVersion": {
+            "type": "string",
+            "example": "1.0",
+            "description": "The version of the API"
+          },
+          "requestId": {
+            "type": "string",
+            "example": "req_123456", 
+            "description": "Unique identifier for the request"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp of when the request was processed"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"],
+            "description": "If successful (status code < 400), the status will be 'success' otherwise it will be 'error'"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true,
+            "description": "Descriptive message providing context about the response status. When an ad is served, it will typically be 'Ad served successfully'. When no ad is served, it provides the specific reason"
+          },
+          "adStatus": {
+            "type": "string",
+            "enum": ["served", "not_served"],
+            "description": "Indicates whether an ad was served"
+          },
+          "data": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/AdData" },
+              { "type": "null" }
+            ],
+            "description": "Contains the ad details when an ad is served, null when no ad is served"
+          },
+          "totalTime": {
+            "type": "number",
+            "description": "Processing time in milliseconds"
+          },
+          "documentationUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to the API documentation"
+          }
+        },
+        "required": [
+          "apiVersion",
+          "requestId", 
+          "timestamp",
+          "status",
+          "adStatus",
+          "totalTime",
+          "documentationUrl"
+        ]
+      },
+      "AdData": {
+        "type": "object",
+        "properties": {
+          "creative": {
+            "type": "string",
+            "description": "The creative (ad) content served"
+          },
+          "prod_name": {
+            "type": "string",
+            "description": "The name of the product served"
+          },
+          "prod_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "The url of the product"
+          },
+          "img_url": {
+            "type": "string", 
+            "format": "uri",
+            "description": "The unique identifier or link to the product image"
+          },
+          "price": {
+            "type": "string",
+            "nullable": true,
+            "description": "The price of the product"
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true,
+            "description": "The currency of product price"
+          }
+        },
+        "required": ["creative", "prod_name", "prod_url", "img_url"]
+      },
       "DeveloperSuccessResponse": {
         "type": "object",
         "properties": {
