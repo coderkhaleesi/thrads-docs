@@ -74,7 +74,66 @@
         }
       }
     },
-    "/developer/serve-sponsored-questions/": {
+    "/developer/serve-sponsored-question/": {
+      "post": {
+        "operationId": "developer_serve_sponsored_question_create",
+        "description": "Generate sponsored question",
+        "tags": ["developer"],
+        "security": [
+          { "thradsApiKey": [] },
+          {}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServeAdRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServeSponsoredQuestionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid token",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DeveloperErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/DeveloperErrorResponse" } }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/DeveloperErrorResponse" } }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/DeveloperErrorResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/developer/serve-random-sponsored-question/": {
       "post": {
         "operationId": "developer_serve_sponsored_questions_create",
         "description": "Generate sponsored question",
@@ -89,7 +148,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DeveloperSuccessResponse"
+                  "$ref": "#/components/schemas/ServeSponsoredQuestionResponse"
                 }
               }
             }
@@ -239,12 +298,6 @@
             "default": 5,
             "minimum": 1,
             "description": "Minimum number of turns to wait between ads"
-          },
-          "adAggressiveness": {
-            "type": "string",
-            "enum": ["low", "medium", "high"],
-            "default": "high",
-            "description": "Set to 'low' for strict matching with strong relevance or 'medium' for a more flexible match"
           }
         },
         "required": ["userId", "chatId", "content"]
@@ -343,6 +396,84 @@
         },
         "required": ["creative", "prod_name", "prod_url", "img_url"]
       },
+      "ServeSponsoredQuestionResponse": {
+        "type": "object",
+        "properties": {
+          "apiVersion": {
+            "type": "string",
+            "example": "1.0",
+            "description": "The version of the API"
+          },
+          "requestId": {
+            "type": "string",
+            "example": "req_123456", 
+            "description": "Unique identifier for the request"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp of when the request was processed"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"],
+            "description": "If successful (status code < 400), the status will be 'success' otherwise it will be 'error'"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true,
+            "description": "Descriptive message providing context about the response status. When an ad is served, it will typically be 'Ad served successfully'. When no ad is served, it provides the specific reason"
+          },
+          "data": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/SponsoredQuestionData" },
+              { "type": "null" }
+            ],
+            "description": "Contains the ad details when an ad is served, null when no ad is served"
+          },
+          "totalTime": {
+            "type": "number",
+            "description": "Processing time in milliseconds"
+          },
+          "documentationUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to the API documentation"
+          }
+        },
+        "required": [
+          "apiVersion",
+          "requestId", 
+          "timestamp",
+          "status",
+          "totalTime",
+          "documentationUrl"
+        ]
+      },
+      "SponsoredQuestionData": {
+        "type": "object",
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "description": "The sponsored question"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "The url of the product"
+          },
+          "icon": {
+            "type": "string", 
+            "format": "uri",
+            "description": "The unique identifier or link to the brand icon"
+          },
+          "token": {
+            "type": "string",
+            "description": "The token to be sent back to register click on the sponsored question"
+          }
+        },
+        "required": ["prompt", "url", "icon", "token"]
+      },
       "DeveloperSuccessResponse": {
         "type": "object",
         "properties": {
@@ -402,7 +533,6 @@
           "requestId": { "type": "string", "example": "req_123456", "description": "Request ID" },
           "timestamp": { "type": "string", "format": "date-time", "description": "Timestamp of the request" },
           "status": { "type": "string", "enum": ["success", "error"], "description": "Always 'success' for success responses" },
-          "data": { "type": "null", "description": "No data returned for click event" },
           "message": { "type": "string", "nullable": true, "description": "Success message" },
           "totalTime": { "type": "number", "nullable": true, "description": "Total time taken to process the request" },
           "documentationUrl": { "type": "string", "format": "uri", "nullable": true, "description": "Documentation URL" }

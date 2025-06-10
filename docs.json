@@ -26,11 +26,18 @@
               "api-reference/endpoint/sponsored_q",
               "api-reference/endpoint/delete"
             ]
-          },
+          }
+        ]
+      },
+      {
+        "tab": "Guides",
+        "groups": [
           {
             "group": "Guides",
             "pages": [
-              
+              "api-reference/guides/quickstart",
+              "api-reference/guides/sponsored_messages_guide",
+              "api-reference/guides/sponsored_questions_guide"
             ]
           }
         ]
@@ -45,7 +52,7 @@
     "links": [
       {
         "label": "Support",
-        "href": "mailto:contact@thrads.ai"
+        "href": "https://thrads.ai"
       }
     ],
     "primary": {
