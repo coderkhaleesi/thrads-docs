@@ -35,9 +35,9 @@
           {
             "group": "Guides",
             "pages": [
-              "api-reference/guides/quickstart",
-              "api-reference/guides/sponsored_messages_guide",
-              "api-reference/guides/sponsored_questions_guide"
+              "guides/quickstart",
+              "guides/sponsored_messages_guide",
+              "guides/sponsored_questions_guide"
             ]
           }
         ]
