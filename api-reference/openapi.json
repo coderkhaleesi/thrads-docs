@@ -408,7 +408,6 @@
           },
           "metaData": {
             "type": "object",
-            "nullable": true, 
             "description": "A object containing metadata about the user, such as age, gender, and other demographic information - this is optional but recommended to improve targeting and thus conversions"
           },
           "content": {
@@ -429,26 +428,22 @@
           },
           "production": {
             "type": "boolean",
-            "nullable": true,
             "default": false,
             "description": "Set to True if the request is coming from a production environment"
           },
           "force": {
             "type": "boolean",
-            "nullable": true, 
             "description": "A flag to force ad serving/suppression. If set to false, ads will be suppressed. If set to true, ads will be served regardless of the user's intent or other developer settings"
           },
           "conversationOffset": {
             "type": "integer",
-            "nullable": true, 
             "default": 0,
             "minimum": 0,
             "maximum": 20,
             "description": "Minimum number of turns to wait before the first ad is returned. The initial messages provide context about the user and their intentions, leading to better targeting"
           },
           "adFrequencyLimit": {
-            "type": "integer", 
-            "nullable": true, 
+            "type": "integer",  
             "default": 0,
             "minimum": 0,
             "maximum": 20,
