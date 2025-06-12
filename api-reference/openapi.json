@@ -412,6 +412,7 @@
           },
           "content": {
             "type": "object",
+            "nullable": true,
             "properties": {
               "user": {
                 "type": "string",
