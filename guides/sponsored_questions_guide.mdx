@@ -1,6 +1,133 @@
 ---
-title: 'Sponsored Messages Integration'
-description: 'Guide on how to integrate sponsored messages in your conversational AI'
+title: 'Sponsored Prompt Integration'
+description: 'Learn how to integrate sponsored prompts into your conversational AI application.'
 ---
 
-⏳ Coming soon. 
+# Integrating Sponsored Prompts
+
+This guide provides comprehensive instructions on integrating sponsored prompts within your conversational AI. It covers essential aspects such as environment modes, different ways to use sponsored prompts, and how to track user engagement.
+
+## Production vs. Sandbox Mode
+
+<Note intent="warning">
+  **Important:** When integrating sponsored messages, it's crucial to distinguish between production and sandbox (non-production) environments.
+  - In **sandbox mode** (`production=False`), ads are returned for testing purposes but are **not counted for monetization**.
+  - In **production mode** (`production=True`), ads are live and contribute to monetization.
+  Always ensure `production=True` is used *only* in your live production environment. For all testing and development, set `production=False`.
+</Note>
+
+## Using Sponsored Messages
+
+Sponsored messages can be incorporated into your AI conversations in two primary ways: as an initial opener or as contextual follow-up questions.
+
+<Tabs>
+  <Tab title="Sponsored Opener">
+    ### Starting Conversations with Sponsored Openers
+
+    You can use the sponsored question endpoint to generate an "opener" – a question to initiate a conversation.
+
+    **Key Points:**
+    - **No Context Needed:** Simply call the endpoint without any prior conversational context.
+    - **Tailored for Your App:** The API will provide a sponsored question suitable for your application, yet conversation-agnostic.
+    - **Unaffected by `conversationalOffset` and `adFrequency` and `force`:** These parameters do not influence the behavior of opener questions.
+
+    **Code Example:**
+```python
+import requests
+
+url = "https://api.thrads.ai/developer/serve-sponsored-questions/"
+
+payload = {
+    "userId": "123",
+    "chatId": "123"
+}
+headers = {
+    "X-Thrads-Api-Key": "YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+
+response = requests.request("POST", url, json=payload, headers=headers)
+
+print(response.text)
+    ```
+  </Tab>
+  <Tab title="Sponsored Follow-up">
+    ### Incorporating Sponsored Follow-up Questions
+
+    To provide relevant sponsored content during an ongoing conversation, use the endpoint for follow-up questions.
+
+    **Key Points:**
+    - **Context is Crucial:** Call this endpoint after each AI-generated response (even if you do not want the ad), providing the conversation context. This allows the API to generate more relevant follow-ups.
+    - **Control Ad Frequency:** Manage the number of ads shown using the `adFrequency` and `conversationalOffset` parameters.
+    - **`force` Parameter:** Use the `force` parameter if you need to override default frequency settings for specific scenarios.
+
+    **Code Example:**
+```python
+import requests
+
+url = "https://api.thrads.ai/developer/serve-sponsored-questions/"
+
+payload = {
+    "production": True,
+    "conversationOffset": 2,
+    "adFrequencyLimit": 2,
+    "userId": "123",
+    "chatId": "123",
+    "userRegion": "US",
+    "content": {
+        "user": "User message",
+        "chatbot": "Bot message"
+    }
+}
+headers = {
+    "X-Thrads-Api-Key": "",
+    "Content-Type": "application/json"
+}
+
+response = requests.request("POST", url, json=payload, headers=headers)
+
+print(response.text)
+```
+  </Tab>
+</Tabs>
+
+## Handling Click Tracking
+
+To ensure accurate monetization and analytics, you must track user clicks on sponsored messages.
+
+<Steps>
+  <Step title="Receive the Token">
+    The sponsored questions endpoint (for both openers and follow-ups) returns a unique `token` along with the sponsored question. Store this token.
+  </Step>
+  <Step title="Detect User Interaction">
+    When a user clicks or taps on the displayed sponsored question.
+  </Step>
+  <Step title="Send Click Confirmation">
+    Immediately send a POST request to the `/developer/serve-sponsored-questions/click/` endpoint. Include the `token` (received in Step 1) in the JSON body of your request.
+    ```json
+    {
+      "token": "THE_UNIQUE_TOKEN_RECEIVED"
+    }
+    ```
+  </Step>
+  <Step title="Receive Reward Confirmation">
+    A successful POST request to the click tracking endpoint will record the click and associate the reward.
+  </Step>
+</Steps>
+
+**Code Example for Click Tracking:**
+
+```python
+import requests
+
+url = "https://api.thrads.ai/developer/serve-sponsored-questions/click/"
+
+payload = {"token": "<string>"}
+headers = {"Content-Type": "application/json"}
+
+response = requests.request("POST", url, json=payload, headers=headers)
+
+print(response.text)
+```
+
+For detailed API specifications, please refer to the [API Reference for Sponsored Questions](/api-reference/endpoint/sponsored_q).
