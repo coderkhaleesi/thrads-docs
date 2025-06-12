@@ -88,7 +88,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ServeAdRequest"
+                "$ref": "#/components/schemas/ServeSponsoredQuestionRequest"
               }
             }
           }
@@ -253,13 +253,11 @@
           },
           "userRegion": {
             "type": "string",
-            "nullable": true,
             "description": "The user's region, specified as a two-letter country code (ISO 3166-1 alpha-2), e.g., 'US', 'GB', 'IT'. If left blank, ads targeted to specific regions will not be served, potentially reducing your monetization",
             "pattern": "^[A-Z]{2}$"
           },
           "metaData": {
             "type": "object",
-            "nullable": true,
             "description": "A object containing metadata about the user, such as age, gender, and other demographic information - this is optional but recommended to improve targeting and thus conversions"
           },
           "content": {
@@ -284,7 +282,6 @@
           },
           "force": {
             "type": "boolean",
-            "nullable": true,
             "description": "A flag to force ad serving/suppression. If set to false, ads will be suppressed. If set to true, ads will be served regardless of the user's intent or other developer settings"
           },
           "conversationOffset": {
@@ -327,7 +324,6 @@
           },
           "message": {
             "type": "string",
-            "nullable": true,
             "description": "Descriptive message providing context about the response status. When an ad is served, it will typically be 'Ad served successfully'. When no ad is served, it provides the specific reason"
           },
           "adStatus": {
@@ -385,16 +381,75 @@
           },
           "price": {
             "type": "string",
-            "nullable": true,
             "description": "The price of the product"
           },
           "currency": {
             "type": "string",
-            "nullable": true,
             "description": "The currency of product price"
           }
         },
-        "required": ["creative", "prod_name", "prod_url", "img_url"]
+        "required": ["creative", "prod_name", "prod_url"]
+      },
+      "ServeSponsoredQuestionRequest": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "The unique identifier for the user must be distinct for each individual and remain consistent across sessions for the same user"
+          },
+          "chatId": {
+            "type": "string", 
+            "description": "The unique identifier for the chat must be distinct for each chat and remain consistent throughout the conversation"
+          },
+          "userRegion": {
+            "type": "string",
+            "description": "The user's region, specified as a two-letter country code (ISO 3166-1 alpha-2), e.g., 'US', 'GB', 'IT'. If left blank, ads targeted to specific regions will not be served, potentially reducing your monetization",
+            "pattern": "^[A-Z]{2}$"
+          },
+          "metaData": {
+            "type": "object",
+            "description": "A object containing metadata about the user, such as age, gender, and other demographic information - this is optional but recommended to improve targeting and thus conversions"
+          },
+          "content": {
+            "type": "object",
+            "properties": {
+              "user": {
+                "type": "string",
+                "description": "The last message sent by the user"
+              },
+              "chatbot": {
+                "type": "string", 
+                "description": "The last message sent by the chatbot"
+              }
+            },
+            "required": ["user", "chatbot"],
+            "description": "A object containing the latest messages"
+          },
+          "production": {
+            "type": "boolean",
+            "default": false,
+            "description": "Set to True if the request is coming from a production environment"
+          },
+          "force": {
+            "type": "boolean",
+            "description": "A flag to force ad serving/suppression. If set to false, ads will be suppressed. If set to true, ads will be served regardless of the user's intent or other developer settings"
+          },
+          "conversationOffset": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0,
+            "maximum": 20,
+            "description": "Minimum number of turns to wait before the first ad is returned. The initial messages provide context about the user and their intentions, leading to better targeting"
+          },
+          "adFrequencyLimit": {
+            "type": "integer", 
+            "default": 0,
+            "minimum": 0,
+            "maximum": 20,
+            "description": "Minimum number of turns to wait between ads"
+          }
+        },
+        "required": ["userId", "chatId"]
       },
       "ServeSponsoredQuestionResponse": {
         "type": "object",
@@ -421,7 +476,6 @@
           },
           "message": {
             "type": "string",
-            "nullable": true,
             "description": "Descriptive message providing context about the response status. When an ad is served, it will typically be 'Ad served successfully'. When no ad is served, it provides the specific reason"
           },
           "data": {
@@ -488,9 +542,9 @@
                   "description": "Response data including the sponsored question and its attributes"
                 },
           "status": { "type": "string", "enum": ["success", "error"], "description": "Always 'success' for success responses" },
-          "message": { "type": "string", "nullable": true, "description": "Success message" },
-          "totalTime": { "type": "number", "nullable": true, "description": "Total time taken to process the request" },
-          "documentationUrl": { "type": "string", "format": "uri", "nullable": true, "description": "Documentation URL" }
+          "message": { "type": "string", "description": "Success message" },
+          "totalTime": { "type": "number", "description": "Total time taken to process the request" },
+          "documentationUrl": { "type": "string", "format": "uri", "description": "Documentation URL" }
         },
         "required": [
           "apiVersion",
@@ -510,10 +564,10 @@
           "requestId": { "type": "string", "example": "req_123456", "description": "Request ID" },
           "timestamp": { "type": "string", "format": "date-time", "description": "Timestamp of the request" },
           "status": { "type": "string", "enum": ["error"], "description": "Always 'error' for error responses" },
-          "message": { "type": "string", "nullable": true, "description": "Error message" },
+          "message": { "type": "string", "description": "Error message" },
           "error": { "type": "string", "nullable": true },
           "totalTime": { "type": "number", "nullable": true },
-          "documentationUrl": { "type": "string", "format": "uri", "nullable": true, "description": "Documentation URL" }
+          "documentationUrl": { "type": "string", "format": "uri", "description": "Documentation URL" }
         },
         "required": [
           "apiVersion",
@@ -533,9 +587,9 @@
           "requestId": { "type": "string", "example": "req_123456", "description": "Request ID" },
           "timestamp": { "type": "string", "format": "date-time", "description": "Timestamp of the request" },
           "status": { "type": "string", "enum": ["success", "error"], "description": "Always 'success' for success responses" },
-          "message": { "type": "string", "nullable": true, "description": "Success message" },
-          "totalTime": { "type": "number", "nullable": true, "description": "Total time taken to process the request" },
-          "documentationUrl": { "type": "string", "format": "uri", "nullable": true, "description": "Documentation URL" }
+          "message": { "type": "string", "description": "Success message" },
+          "totalTime": { "type": "number", "description": "Total time taken to process the request" },
+          "documentationUrl": { "type": "string", "format": "uri", "description": "Documentation URL" }
         },
         "required": [
           "apiVersion",
@@ -555,7 +609,6 @@
           "icon_url": {
             "type": "string",
             "format": "uri",
-            "nullable": true,
             "description": "Icon URL"
           },
           "brand": {
@@ -564,7 +617,6 @@
           },
           "keyword_search": {
             "type": "string",
-            "nullable": true,
             "description": "Keyword search that maps to the sponsored question in standard search bars"
           },
           "question": {
