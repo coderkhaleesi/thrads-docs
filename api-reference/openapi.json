@@ -641,7 +641,7 @@
           },
           "search_query": {
             "type": "string",
-            "description": "The search query to be used to search for a sponsored search"
+            "description": "The search query of the user"
           },
           "clicked": {
             "type": "boolean",
