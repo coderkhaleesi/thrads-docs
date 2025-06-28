@@ -648,7 +648,7 @@
             "description": "Whether the user clicked on the sponsored search"
           }
         },
-        "required": ["token", "search_query", "clicked"]
+        "required": ["token"]
       }
     },
     "securitySchemes": {
