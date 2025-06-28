@@ -638,9 +638,17 @@
           "token": {
             "type": "string",
             "description": "Token to be used for click tracking"
+          },
+          "search_query": {
+            "type": "string",
+            "description": "The search query to be used to search for a sponsored search"
+          },
+          "clicked": {
+            "type": "boolean",
+            "description": "Whether the user clicked on the sponsored search"
           }
         },
-        "required": ["token"]
+        "required": ["token", "search_query", "clicked"]
       }
     },
     "securitySchemes": {
