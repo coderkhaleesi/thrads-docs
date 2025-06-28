@@ -527,7 +527,7 @@
             "description": "The token to be sent back to register click on the sponsored question"
           }
         },
-        "required": ["prompt", "url", "icon", "token"]
+        "required": ["prompt", "url", "token"]
       },
       "DeveloperSuccessResponse": {
         "type": "object",
@@ -638,14 +638,6 @@
           "token": {
             "type": "string",
             "description": "Token to be used for click tracking"
-          },
-          "search_query": {
-            "type": "string",
-            "description": "The search query of the user"
-          },
-          "clicked": {
-            "type": "boolean",
-            "description": "Whether the user clicked on the sponsored search"
           }
         },
         "required": ["token"]
