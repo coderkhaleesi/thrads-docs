@@ -38,7 +38,8 @@
               "guides/quickstart",
               "guides/sponsored_messages_guide",
               "guides/sponsored_questions_guide",
-              "guides/vibe_integration"
+              "guides/vibe_integration_context",
+              "guides/vibe_integration_prompts"
             ]
           }
         ]
