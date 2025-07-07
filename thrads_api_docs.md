@@ -1,0 +1,310 @@
+# Thrads API Documentation
+
+## Overview
+
+The Thrads API provides sponsored content integration for chat, search, and messaging experiences. All endpoints return responses in a consistent JSON format and require authentication via the `thrads-api-key` header.
+
+## Base Configuration
+
+- **API Version**: 0.1.0
+- **Base URL**: `/api/v1/`
+- **Authentication Header**: `thrads-api-key`
+
+## Common Response Format
+
+All endpoints return responses with this structure:
+
+```json
+{
+    "apiVersion": "0.1.0",
+    "requestId": "<uuid>",
+    "timestamp": "<ISO timestamp>",
+    "docsUrl": "https://preview-docs.thrads.ai/",
+    "totalTime": "<processing_time>",
+    "status": "success" | "error",
+    "message": "...",
+    "data": "<payload>",
+    "error": { ... }   // only present for error responses
+}
+```
+
+## Authentication
+
+All protected endpoints require an API key in the header:
+
+```
+thrads-api-key: <YOUR_API_KEY>
+```
+
+Missing or invalid keys result in standard error responses.
+
+---
+
+## Endpoints
+
+### 1. POST /api/v1/search/get-ad/
+
+**Product Rationale**: Use this endpoint when users perform searches or when you want to suggest sponsored search queries. This is ideal for search result pages, search suggestion dropdowns, or when users express search intent in conversation.
+
+**Request Body**: `SponsoredSearchPromptRequest`
+
+**Required Fields**:
+
+- `userId` (string): Unique identifier for the user
+
+**Optional Fields**:
+
+- `metaData` (object): Additional context about the user or search intent
+- `max_length` (integer): Maximum length of the generated prompt
+- `production` (boolean): Whether this is a production request (affects token generation)
+- `return_keywords_search` (boolean): Whether to return suggested search keywords
+
+**Example Request**:
+
+```json
+{
+  "userId": "searcher1",
+  "metaData": { "category": "home decor" },
+  "return_keywords_search": true,
+  "production": true
+}
+```
+
+**Example Response**:
+
+```json
+{
+  "apiVersion": "0.1.0",
+  "requestId": "77c1e364-...",
+  "timestamp": "2024-06-02T10:24:00Z",
+  "docsUrl": "https://preview-docs.thrads.ai/",
+  "totalTime": 0.4,
+  "status": "success",
+  "message": "Request successful",
+  "data": {
+    "prompt": "Looking for minimalist shelving ideas?",
+    "keyword_search": "minimalist shelves",
+    "link": "https://www.muji.com",
+    "brand": "Muji",
+    "rationale": "Muji specializes in minimalist home goods",
+    "token": "<signed-token>"
+  }
+}
+```
+
+### 2. POST /api/v1/search/feedback/
+
+**Product Rationale**: Use this endpoint to track user engagement with sponsored search prompts. Call this when users click on sponsored search results or perform the suggested search. This data helps improve ad targeting and measure campaign effectiveness.
+
+**Request Body**: `SponsoredSearchFeedbackRequest`
+
+**Required Fields**:
+
+- `token` (string): The signed token from the original search ad response
+
+**Optional Fields**:
+
+- `clicked` (boolean): Whether the user clicked on the sponsored content
+- `user_search` (string): The actual search query performed by the user
+
+**Example Request**:
+
+```json
+{
+  "token": "<signed-token>",
+  "clicked": true,
+  "user_search": "minimalist shelves for living room"
+}
+```
+
+### 3. POST /api/v1/prompt/get-ad/
+
+**Product Rationale**: Use this endpoint to generate sponsored prompts within chat conversations. This is perfect for chatbots that want to naturally introduce sponsored questions or suggestions. Can generate both conversation openers and follow-up prompts based on context.
+
+**Request Body**: `SponsoredChatbotPromptRequest`
+
+**Required Fields**:
+
+- `userId` (string): Unique identifier for the user
+- `chatId` (string): Unique identifier for the chat session
+
+**Optional Fields**:
+
+- `content` (object): Conversation context with `user` and `chatbot` message pairs
+- `userRegion` (string): User's geographic region for localized ads
+- `metaData` (object): Additional context about user interests or conversation topic
+- `max_length` (integer): Maximum length of the generated prompt
+- `force` (boolean): Whether to force ad generation regardless of frequency limits
+- `conversationOffset` (integer): Position in the conversation for context
+- `adFrequencyLimit` (integer): Maximum ads per conversation
+- `production` (boolean): Whether this is a production request
+
+**Example Request**:
+
+```json
+{
+  "userId": "user42",
+  "chatId": "chatX",
+  "content": {
+    "user": "I'm looking for relaxing weekend trips.",
+    "chatbot": "Sure, I can recommend a few destinations."
+  },
+  "metaData": { "interest": "travel" },
+  "production": true
+}
+```
+
+**Example Response**:
+
+```json
+{
+  "apiVersion": "0.1.0",
+  "requestId": "5b68f88c-...",
+  "timestamp": "2024-06-02T10:20:00Z",
+  "docsUrl": "https://preview-docs.thrads.ai/",
+  "totalTime": 0.45,
+  "status": "success",
+  "message": "Ad served successfully",
+  "data": {
+    "prompt": "Anyone stayed in cozy cabins near the Alps?",
+    "link": "https://www.airbnb.com",
+    "brand": "Airbnb",
+    "rationale": "Fits local immersive travel",
+    "icon": "https://media.thrads.ai/sponsored_question_icons/ad_icon.png",
+    "token": "<signed-token>"
+  }
+}
+```
+
+### 4. POST /api/v1/prompt/click/
+
+**Product Rationale**: Use this endpoint to track when users click on sponsored prompts. This is essential for measuring engagement and optimizing ad performance. Call this immediately when a user interacts with a sponsored prompt.
+
+**Request Body**: `SponsoredChatbotPromptClickRequest`
+
+**Required Fields**:
+
+- `token` (string): The signed token from the original prompt response
+
+**Example Request**:
+
+```json
+{
+  "token": "<signed-token>"
+}
+```
+
+### 5. POST /api/v1/message/get-ad/
+
+**Product Rationale**: Use this endpoint to generate sponsored messages that appear as natural parts of the conversation. This is ideal for chat applications where you want to seamlessly integrate product recommendations or branded content based on the conversation context.
+
+**Request Body**: `SponsoredMessageChatbotRequest`
+
+**Required Fields**:
+
+- `userId` (string): Unique identifier for the user
+- `chatId` (string): Unique identifier for the chat session
+- `content` (object): Required conversation context with `user` and `chatbot` message pairs
+
+**Optional Fields**:
+
+- `userRegion` (string): User's geographic region for localized ads
+- `metaData` (object): Additional context about user interests or conversation topic
+- `force` (boolean): Whether to force ad generation regardless of frequency limits
+- `conversationOffset` (integer): Position in the conversation for context
+- `adFrequencyLimit` (integer): Maximum ads per conversation
+- `production` (boolean): Whether this is a production request
+
+**Example Request**:
+
+```json
+{
+  "userId": "alice",
+  "chatId": "session123",
+  "content": {
+    "user": "Thanks for your tips on hiking boots!",
+    "chatbot": "Glad it helped. Anything else you need?"
+  },
+  "metaData": { "topic": "outdoor gear" },
+  "production": true
+}
+```
+
+**Example Response**:
+
+```json
+{
+  "apiVersion": "0.1.0",
+  "requestId": "1ef7bd98-...",
+  "timestamp": "2024-06-02T10:22:00Z",
+  "docsUrl": "https://preview-docs.thrads.ai/",
+  "totalTime": 0.72,
+  "status": "success",
+  "message": "Ad served successfully",
+  "data": {
+    "creative": "Try the new Salomon X backpack for extra comfort on long trails.",
+    "prod_name": "Salomon X Backpack",
+    "img_url": "https://example.com/backpack.jpg",
+    "prod_url": "https://<domain>/api/v1/message/redirect/<token>"
+  }
+}
+```
+
+### 6. GET /api/v1/message/redirect/{token}
+
+**Product Rationale**: Use this endpoint as the target for product links in sponsored messages. It handles click tracking and analytics before redirecting users to the actual product page. This provides attribution tracking and campaign measurement.
+
+**URL Parameters**:
+
+- `token` (string): The redirect token from the message response
+
+**Response**: HTTP 302 redirect to the final product URL
+
+### 7. GET /
+
+**Product Rationale**: Simple welcome endpoint for basic connectivity testing.
+
+**Response**: Simple welcome message.
+
+---
+
+## Integration Guidelines
+
+### When to Use Each Endpoint
+
+1. **Search Ads** (`/search/get-ad/`):
+
+   - Search result pages
+   - Search suggestion dropdowns
+   - When users express search intent in conversation
+
+2. **Chat Prompts** (`/prompt/get-ad/`):
+
+   - Conversation starters
+   - Follow-up questions in chat
+   - When you want to introduce sponsored topics naturally
+
+3. **Chat Messages** (`/message/get-ad/`):
+
+   - Product recommendations within conversation
+   - Sponsored responses to user queries
+   - When conversation context suggests commercial intent
+
+4. **Click Tracking** (`/prompt/click/`, `/search/feedback/`):
+   - Immediately after user interaction with sponsored content
+   - Essential for attribution and optimization
+
+### Best Practices
+
+1. **Token Management**: Always use the tokens provided in production responses for tracking and redirects
+2. **Frequency Control**: Use `adFrequencyLimit` to prevent ad fatigue
+3. **Context Relevance**: Provide rich `metaData` and `content` for better ad targeting
+4. **Error Handling**: Check the `status` field in responses and handle errors gracefully
+5. **Analytics**: Implement proper click tracking for campaign measurement
+
+### Rate Limits and Production Considerations
+
+- Set `production: true` for live traffic to enable proper token generation
+- Use `production: false` for testing to avoid skewing analytics
+- Monitor the `totalTime` field to track API performance
+- Implement proper error handling for network timeouts and API errors
