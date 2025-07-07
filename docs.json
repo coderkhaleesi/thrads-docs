@@ -37,7 +37,8 @@
             "pages": [
               "guides/quickstart",
               "guides/sponsored_messages_guide",
-              "guides/sponsored_questions_guide"
+              "guides/sponsored_questions_guide",
+              "guides/vibe_integration"
             ]
           }
         ]
