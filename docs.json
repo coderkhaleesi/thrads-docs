@@ -14,17 +14,29 @@
         "tab": "API Reference",
         "groups": [
           {
-            "group": "API Documentation",
+            "group": "Introduction",
             "pages": [
-              "api-reference/introduction"
+              "api-reference/getting_started"
             ]
           },
           {
-            "group": "Endpoints",
+            "group": "Sponsored Messages",
             "pages": [
-              "api-reference/endpoint/serve_ad",
-              "api-reference/endpoint/sponsored_q",
-              "api-reference/endpoint/delete"
+              "api-reference/endpoint/message"
+            ]
+          },
+          {
+            "group": "Sponsored Prompts",
+            "pages": [
+              "api-reference/endpoint/prompt",
+              "api-reference/endpoint/prompt_click"
+            ]
+          },
+          {
+            "group": "Sponsored Search",
+            "pages": [
+              "api-reference/endpoint/search",
+              "api-reference/endpoint/search_feedback"
             ]
           }
         ]
@@ -33,11 +45,21 @@
         "tab": "Guides",
         "groups": [
           {
-            "group": "Guides",
+            "group": "Quickstart",
             "pages": [
-              "guides/quickstart",
+              "guides/quickstart"
+            ]
+          },
+          {
+            "group": "Integration Guides",
+            "pages": [
               "guides/sponsored_messages_guide",
-              "guides/sponsored_questions_guide",
+              "guides/sponsored_questions_guide"
+            ]
+          },
+          {
+            "group": "Vibe Integration ✌️",
+            "pages": [
               "guides/vibe_integration_context",
               "guides/vibe_integration_prompts"
             ]
