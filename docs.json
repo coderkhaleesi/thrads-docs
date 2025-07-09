@@ -54,7 +54,8 @@
             "group": "Integration Guides",
             "pages": [
               "guides/sponsored_messages_guide",
-              "guides/sponsored_questions_guide"
+              "guides/sponsored_prompts_guide",
+              "guides/sponsored_search_guide"
             ]
           },
           {

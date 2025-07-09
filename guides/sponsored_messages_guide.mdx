@@ -1,7 +1,248 @@
 ---
-title: 'Sponsored Messages Integration'
-description: 'Guide on how to integrate sponsored messages in your conversational AI'
+title: "Sponsored Messages Integration Guide"
+description: "Learn how to integrate sponsored messages into your chat applications using the Thrads API."
 ---
 
-⏳ Coming soon. Please visit [this page](https://www.thrads.ai/publishers-documentation/integration-guide) in the old documentation for now.
+# Sponsored Messages Integration Guide
 
+This guide provides comprehensive instructions on integrating sponsored messages within your chat applications. Sponsored messages appear as natural parts of conversations and can include product recommendations or branded content based on conversation context.
+
+## Production vs. Sandbox Mode
+
+<Note intent="warning">
+  **Important:** When integrating sponsored messages, it's crucial to
+  distinguish between production and sandbox (non-production) environments. - In
+  **sandbox mode** (`production=False`), ads are returned for testing purposes
+  but are **not counted for monetization**. - In **production mode**
+  (`production=True`), ads are live and contribute to monetization. Always
+  ensure `production=True` is used *only* in your live production environment.
+  For all testing and development, set `production=False`.
+</Note>
+
+## When to Use Sponsored Messages
+
+Sponsored messages are ideal for:
+
+- Product recommendations within conversation
+- Sponsored responses to user queries
+- When conversation context suggests commercial intent
+- Seamlessly integrating branded content into natural conversations
+
+## Getting Sponsored Messages
+
+### Endpoint: POST /api/v1/message/get-ad/
+
+Use this endpoint to generate sponsored messages that appear as natural parts of the conversation.
+
+**Required Fields:**
+
+- `userId` (string): Unique identifier for the user
+- `chatId` (string): Unique identifier for the chat session
+- `content` (object): Required conversation context with `user` and `chatbot` message pairs
+
+**Optional Fields:**
+
+- `userRegion` (string): User's geographic region for localized ads
+- `metaData` (object): Additional context about user interests or conversation topic
+- `force` (boolean): Whether to force ad generation regardless of frequency limits
+- `conversationOffset` (integer): Position in the conversation for context
+- `adFrequencyLimit` (integer): Maximum ads per conversation
+- `production` (boolean): Whether this is a production request
+
+### Code Example
+
+```python
+import requests
+
+url = "https://dev.thrads.ai/api/v1/message/get-ad/"
+
+payload = {
+    "userId": "alice",
+    "chatId": "session123",
+    "content": {
+        "user": "Thanks for your tips on hiking boots!",
+        "chatbot": "Glad it helped. Anything else you need?"
+    },
+    "metaData": { "topic": "outdoor gear" },
+    "production": True,
+    "adFrequencyLimit": 3,
+    "conversationOffset": 2
+}
+
+headers = {
+    "thrads-api-key": "YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+print(response.text)
+```
+
+### Example Response
+
+```json
+{
+  "apiVersion": "0.1.0",
+  "requestId": "1ef7bd98-...",
+  "timestamp": "2024-06-02T10:22:00Z",
+  "docsUrl": "https://preview-docs.thrads.ai/",
+  "totalTime": 0.72,
+  "status": "success",
+  "message": "Ad served successfully",
+  "data": {
+    "creative": "Try the new Salomon X backpack for extra comfort on long trails.",
+    "prod_name": "Salomon X Backpack",
+    "img_url": "https://example.com/backpack.jpg",
+    "prod_url": "https://<domain>/api/v1/message/redirect/<token>"
+  }
+}
+```
+
+## Handling Product Redirects
+
+The sponsored message response includes a `prod_url` that points to a redirect endpoint. This endpoint handles click tracking and analytics before redirecting users to the actual product page.
+
+### Endpoint: GET /api/v1/message/redirect/{token}
+
+- **URL Parameters**: `token` (string): The redirect token from the message response
+- **Response**: HTTP 302 redirect to the final product URL
+
+This endpoint automatically:
+
+- Tracks user clicks for attribution
+- Measures campaign effectiveness
+- Redirects to the actual product page
+
+## Best Practices
+
+### 1. Use Metadata for Better Targeting
+
+```python
+payload = {
+    "userId": "user123",
+    "chatId": "chat456",
+    "content": content,
+    "metaData": {
+        "topic": "outdoor gear",
+        "user_interests": "camping, hiking, outdoor",
+        "conversation_stage": "gear_selection"
+    },
+    "production": True
+}
+```
+
+### 2. Control Ad Frequency
+
+Use `adFrequencyLimit` and `conversationOffset` to prevent ad fatigue:
+
+```python
+payload = {
+    "userId": "user123",
+    "chatId": "chat456",
+    "content": content,
+    "adFrequencyLimit": 2,  # Maximum 2 ads per conversation
+    "conversationOffset": 5,  # Wait for 5 exchanges before showing ads
+    "production": True
+}
+```
+
+### 3. Handle Responses Gracefully
+
+```python
+response = requests.post(url, json=payload, headers=headers)
+data = response.json()
+
+if data.get("status") == "success" and data.get("data"):
+    # Display the sponsored message
+    message_data = data["data"]
+    creative = message_data.get("creative")
+    product_name = message_data.get("prod_name")
+    image_url = message_data.get("img_url")
+    product_url = message_data.get("prod_url")
+
+    # Render the sponsored message in your UI
+    display_sponsored_message(creative, product_name, image_url, product_url)
+else:
+    # No ad available or error occurred
+    print(f"No sponsored message available: {data.get('message', 'Unknown error')}")
+```
+
+## Error Handling
+
+Always check the response status and handle errors appropriately:
+
+```python
+try:
+    response = requests.post(url, json=payload, headers=headers, timeout=10)
+    response.raise_for_status()
+
+    data = response.json()
+
+    if data.get("status") == "success":
+        # Process successful response
+        if data.get("data"):
+            # Ad available
+            return data["data"]
+        else:
+            # No ad available (normal case)
+            return None
+    else:
+        # API returned an error
+        print(f"API Error: {data.get('message', 'Unknown error')}")
+        return None
+
+except requests.exceptions.RequestException as e:
+    print(f"Request failed: {e}")
+    return None
+except ValueError as e:
+    print(f"Invalid JSON response: {e}")
+    return None
+```
+
+## Integration Workflow
+
+1. **Monitor Conversation Context**: Track the ongoing conversation between user and chatbot
+2. **Check Ad Timing**: Determine if it's appropriate to show a sponsored message based on conversation flow
+3. **Call the API**: Make a request to `/api/v1/message/get-ad/` with conversation context
+4. **Display the Message**: If an ad is returned, display it naturally within the conversation
+5. **Handle Clicks**: When users click on product links, the redirect endpoint automatically handles tracking
+
+## Common Response Format
+
+All endpoints return responses with this structure:
+
+```json
+{
+    "apiVersion": "0.1.0",
+    "requestId": "<uuid>",
+    "timestamp": "<ISO timestamp>",
+    "docsUrl": "https://preview-docs.thrads.ai/",
+    "totalTime": "<processing_time>",
+    "status": "success" | "error",
+    "message": "...",
+    "data": "<payload>",
+    "error": { ... }   // only present for error responses
+}
+```
+
+## Authentication
+
+All requests require an API key in the header:
+
+```python
+headers = {
+    "thrads-api-key": "YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+```
+
+Missing or invalid keys result in standard error responses.
+
+## Rate Limits and Performance
+
+- Monitor the `totalTime` field to track API performance
+- Implement proper error handling for network timeouts and API errors
+- Use `production: true` for live traffic to enable proper token generation
+- Use `production: false` for testing to avoid skewing analytics
+
+For detailed API specifications, please refer to the [API Reference](/api-reference/endpoint/message).

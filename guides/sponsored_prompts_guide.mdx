@@ -1,6 +1,6 @@
 ---
-title: 'Sponsored Prompt Integration'
-description: 'Learn how to integrate sponsored prompts into your conversational AI application.'
+title: "Sponsored Prompt Integration"
+description: "Learn how to integrate sponsored prompts into your conversational AI application."
 ---
 
 # Integrating Sponsored Prompts
@@ -10,21 +10,24 @@ This guide provides comprehensive instructions on integrating sponsored prompts 
 ## Production vs. Sandbox Mode
 
 <Note intent="warning">
-  **Important:** When integrating sponsored messages, it's crucial to distinguish between production and sandbox (non-production) environments.
-  - In **sandbox mode** (`production=False`), ads are returned for testing purposes but are **not counted for monetization**.
-  - In **production mode** (`production=True`), ads are live and contribute to monetization.
-  Always ensure `production=True` is used *only* in your live production environment. For all testing and development, set `production=False`.
+  **Important:** When integrating sponsored messages, it's crucial to
+  distinguish between production and sandbox (non-production) environments. - In
+  **sandbox mode** (`production=False`), ads are returned for testing purposes
+  but are **not counted for monetization**. - In **production mode**
+  (`production=True`), ads are live and contribute to monetization. Always
+  ensure `production=True` is used *only* in your live production environment.
+  For all testing and development, set `production=False`.
 </Note>
 
 ## Using Sponsored Messages
 
-Sponsored messages can be incorporated into your AI conversations in two primary ways: as an initial opener or as contextual follow-up questions.
+Sponsored prompts can be incorporated into your AI conversations in two primary ways: as an initial opener or as contextual follow-up questions.
 
 <Tabs>
   <Tab title="Sponsored Opener">
     ### Starting Conversations with Sponsored Openers
 
-    You can use the sponsored question endpoint to generate an "opener" – a question to initiate a conversation.
+    You can use the sponsored prompt endpoint to generate an "opener" – a question to initiate a conversation.
 
     **Key Points:**
     - **No Context Needed:** Simply call the endpoint without any prior conversational context.
@@ -32,17 +35,18 @@ Sponsored messages can be incorporated into your AI conversations in two primary
     - **Unaffected by `conversationalOffset` and `adFrequency` and `force`:** These parameters do not influence the behavior of opener questions.
 
     **Code Example:**
-```python
+
+````python
 import requests
 
-url = "https://api.thrads.ai/developer/serve-sponsored-questions/"
+url = "https://dev.thrads.ai/api/v1/prompt/get-ad/"
 
 payload = {
     "userId": "123",
     "chatId": "123"
 }
 headers = {
-    "X-Thrads-Api-Key": "YOUR_API_KEY",
+    "thrads-api-key": "YOUR_API_KEY",
     "Content-Type": "application/json"
 }
 
@@ -65,7 +69,7 @@ print(response.text)
 ```python
 import requests
 
-url = "https://api.thrads.ai/developer/serve-sponsored-questions/"
+url = "https://dev.thrads.ai/api/v1/prompt/get-ad/"
 
 payload = {
     "production": True,
@@ -80,14 +84,15 @@ payload = {
     }
 }
 headers = {
-    "X-Thrads-Api-Key": "",
+    "thrads-api-key": "YOUR_API_KEY",
     "Content-Type": "application/json"
 }
 
 response = requests.request("POST", url, json=payload, headers=headers)
 
 print(response.text)
-```
+````
+
   </Tab>
 </Tabs>
 
@@ -120,7 +125,7 @@ To ensure accurate monetization and analytics, you must track user clicks on spo
 ```python
 import requests
 
-url = "https://api.thrads.ai/developer/serve-sponsored-questions/click/"
+url = "https://dev.thrads.ai/api/v1/prompt/click/"
 
 payload = {"token": "<string>"}
 headers = {"Content-Type": "application/json"}

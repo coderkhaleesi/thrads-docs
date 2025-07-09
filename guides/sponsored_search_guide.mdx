@@ -1,0 +1,450 @@
+---
+title: "Sponsored Search Integration Guide"
+description: "Learn how to integrate sponsored search prompts into your search applications using the Thrads API."
+---
+
+# Sponsored Search Integration Guide
+
+This guide provides comprehensive instructions on integrating sponsored search prompts within your search applications. Sponsored search prompts suggest relevant queries and search terms to users, helping them discover products and services through natural search interactions.
+
+## Production vs. Sandbox Mode
+
+<Note intent="warning">
+  **Important:** When integrating sponsored search, it's crucial to distinguish
+  between production and sandbox (non-production) environments. - In **sandbox
+  mode** (`production=False`), ads are returned for testing purposes but are
+  **not counted for monetization**. - In **production mode**
+  (`production=True`), ads are live and contribute to monetization. Always
+  ensure `production=True` is used *only* in your live production environment.
+  For all testing and development, set `production=False`.
+</Note>
+
+## When to Use Sponsored Search
+
+Sponsored search is ideal for:
+
+- Search result pages
+- Search suggestion dropdowns
+- When users express search intent in conversation
+- Helping users discover relevant products and services
+- Enhancing search experiences with targeted suggestions
+
+## Getting Sponsored Search Prompts
+
+### Endpoint: POST /api/v1/search/get-ad/
+
+Use this endpoint when users perform searches or when you want to suggest sponsored search queries.
+
+**Required Fields:**
+
+- `userId` (string): Unique identifier for the user
+
+**Optional Fields:**
+
+- `metaData` (object): Additional context about the user or search intent
+- `max_length` (integer): Maximum length of the generated prompt
+- `production` (boolean): Whether this is a production request (affects token generation)
+- `return_keywords_search` (boolean): Whether to return suggested search keywords
+
+### Code Example
+
+```python
+import requests
+
+url = "https://dev.thrads.ai/api/v1/search/get-ad/"
+
+payload = {
+    "userId": "searcher1",
+    "metaData": {
+        "category": "home decor",
+        "user_interests": "minimalist, modern",
+        "search_context": "living room furniture"
+    },
+    "return_keywords_search": True,
+    "max_length": 100,
+    "production": True
+}
+
+headers = {
+    "thrads-api-key": "YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+print(response.text)
+```
+
+### Example Response
+
+```json
+{
+  "apiVersion": "0.1.0",
+  "requestId": "77c1e364-...",
+  "timestamp": "2024-06-02T10:24:00Z",
+  "docsUrl": "https://preview-docs.thrads.ai/",
+  "totalTime": 0.4,
+  "status": "success",
+  "message": "Request successful",
+  "data": {
+    "prompt": "Looking for minimalist shelving ideas?",
+    "keyword_search": "minimalist shelves",
+    "link": "https://www.muji.com",
+    "brand": "Muji",
+    "rationale": "Muji specializes in minimalist home goods",
+    "token": "<signed-token>"
+  }
+}
+```
+
+## Tracking User Engagement
+
+### Endpoint: POST /api/v1/search/feedback/
+
+Use this endpoint to track user engagement with sponsored search prompts. This is essential for measuring effectiveness and optimizing ad targeting.
+
+**Required Fields:**
+
+- `token` (string): The signed token from the original search ad response
+
+**Optional Fields:**
+
+- `clicked` (boolean): Whether the user clicked on the sponsored content
+- `user_search` (string): The actual search query performed by the user
+
+### Code Example
+
+```python
+import requests
+
+url = "https://dev.thrads.ai/api/v1/search/feedback/"
+
+payload = {
+    "token": "<signed-token>",
+    "clicked": True,
+    "user_search": "minimalist shelves for living room"
+}
+
+headers = {
+    "thrads-api-key": "YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+print(response.text)
+```
+
+## Best Practices
+
+### 1. Provide Rich Metadata
+
+The more context you provide, the more relevant the sponsored search prompts will be:
+
+```python
+# Good - Basic context
+payload = {
+    "userId": "user123",
+    "metaData": { "category": "electronics" },
+    "production": True
+}
+
+# Better - Rich context
+payload = {
+    "userId": "user123",
+    "metaData": {
+        "category": "electronics",
+        "user_interests": "gaming, productivity",
+        "search_history": "gaming mouse, mechanical keyboard",
+        "price_range": "mid-range",
+        "brand_preferences": "logitech, corsair"
+    },
+    "production": True
+}
+```
+
+### 2. Use Keyword Search Returns
+
+When `return_keywords_search` is true, you get both a natural language prompt and suggested keywords:
+
+```python
+payload = {
+    "userId": "user123",
+    "metaData": { "category": "home decor" },
+    "return_keywords_search": True,
+    "production": True
+}
+
+# Response will include both:
+# "prompt": "Looking for minimalist shelving ideas?"
+# "keyword_search": "minimalist shelves"
+```
+
+### 3. Handle Responses Gracefully
+
+```python
+response = requests.post(url, json=payload, headers=headers)
+data = response.json()
+
+if data.get("status") == "success" and data.get("data"):
+    ad_data = data["data"]
+
+    # Display the sponsored search prompt
+    prompt = ad_data.get("prompt")
+    keywords = ad_data.get("keyword_search")
+    brand = ad_data.get("brand")
+    link = ad_data.get("link")
+    token = ad_data.get("token")  # Save for feedback tracking
+
+    # Render in your search interface
+    display_sponsored_search(prompt, keywords, brand, link, token)
+else:
+    # No sponsored search available
+    print(f"No sponsored search available: {data.get('message', 'Unknown error')}")
+```
+
+### 4. Track All User Interactions
+
+Always track user interactions to provide feedback:
+
+```python
+def track_search_interaction(token, clicked=False, user_search=None):
+    """Track user interaction with sponsored search"""
+
+    feedback_payload = {
+        "token": token,
+        "clicked": clicked
+    }
+
+    if user_search:
+        feedback_payload["user_search"] = user_search
+
+    try:
+        response = requests.post(
+            "https://dev.thrads.ai/api/v1/search/feedback/",
+            json=feedback_payload,
+            headers=headers,
+            timeout=10
+        )
+        response.raise_for_status()
+
+        data = response.json()
+        if data.get("status") == "success":
+            print("Feedback tracked successfully")
+        else:
+            print(f"Feedback tracking failed: {data.get('message')}")
+
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to track feedback: {e}")
+
+# Usage examples:
+# User clicked on sponsored search
+track_search_interaction(token, clicked=True)
+
+# User performed a search (whether they clicked or not)
+track_search_interaction(token, clicked=False, user_search="minimalist shelves for living room")
+
+# User clicked and then searched
+track_search_interaction(token, clicked=True, user_search="minimalist shelves")
+```
+
+## Integration Patterns
+
+### 1. Search Suggestion Dropdown
+
+```python
+def get_search_suggestions(user_id, current_query=""):
+    """Get search suggestions including sponsored content"""
+
+    # Get sponsored search prompt
+    sponsored_response = get_sponsored_search_prompt(
+        user_id=user_id,
+        metadata={"search_context": current_query}
+    )
+
+    suggestions = []
+
+    # Add regular search suggestions
+    suggestions.extend(get_regular_suggestions(current_query))
+
+    # Add sponsored suggestion if available
+    if sponsored_response:
+        suggestions.append({
+            "text": sponsored_response["prompt"],
+            "type": "sponsored",
+            "brand": sponsored_response["brand"],
+            "token": sponsored_response["token"]
+        })
+
+    return suggestions
+```
+
+### 2. Search Results Page
+
+```python
+def render_search_results(query, user_id):
+    """Render search results with sponsored content"""
+
+    # Get regular search results
+    results = perform_search(query)
+
+    # Get sponsored search prompt for related queries
+    sponsored_response = get_sponsored_search_prompt(
+        user_id=user_id,
+        metadata={
+            "search_query": query,
+            "category": infer_category(query)
+        }
+    )
+
+    # Render results
+    render_results(results)
+
+    # Add sponsored search suggestion
+    if sponsored_response:
+        render_sponsored_search_suggestion(sponsored_response)
+```
+
+### 3. Conversational Search
+
+```python
+def handle_search_intent_in_chat(user_message, user_id, chat_id):
+    """Handle search intent within a conversation"""
+
+    # Detect search intent
+    if contains_search_intent(user_message):
+        # Get sponsored search prompt
+        sponsored_response = get_sponsored_search_prompt(
+            user_id=user_id,
+            metadata={
+                "conversation_context": user_message,
+                "search_intent": extract_search_intent(user_message)
+            }
+        )
+
+        if sponsored_response:
+            # Present as a natural follow-up question
+            bot_response = f"I can help you search for that. {sponsored_response['prompt']}"
+            return bot_response, sponsored_response["token"]
+
+    return handle_regular_chat(user_message), None
+```
+
+## Error Handling
+
+Always implement comprehensive error handling:
+
+```python
+def get_sponsored_search_prompt(user_id, metadata=None):
+    """Get sponsored search prompt with error handling"""
+
+    payload = {
+        "userId": user_id,
+        "production": True
+    }
+
+    if metadata:
+        payload["metaData"] = metadata
+
+    try:
+        response = requests.post(
+            "https://dev.thrads.ai/api/v1/search/get-ad/",
+            json=payload,
+            headers=headers,
+            timeout=10
+        )
+        response.raise_for_status()
+
+        data = response.json()
+
+        if data.get("status") == "success" and data.get("data"):
+            return data["data"]
+        else:
+            # No ad available or API error
+            print(f"No sponsored search available: {data.get('message', 'Unknown error')}")
+            return None
+
+    except requests.exceptions.RequestException as e:
+        print(f"Request failed: {e}")
+        return None
+    except ValueError as e:
+        print(f"Invalid JSON response: {e}")
+        return None
+```
+
+## Integration Workflow
+
+1. **Identify Search Context**: Determine when and where to show sponsored search prompts
+2. **Call the API**: Request sponsored search prompts with relevant metadata
+3. **Display Suggestions**: Show sponsored search prompts alongside regular suggestions
+4. **Track Interactions**: Monitor user clicks and searches for feedback
+5. **Optimize**: Use feedback data to improve targeting and relevance
+
+## Common Response Format
+
+All endpoints return responses with this structure:
+
+```json
+{
+    "apiVersion": "0.1.0",
+    "requestId": "<uuid>",
+    "timestamp": "<ISO timestamp>",
+    "docsUrl": "https://preview-docs.thrads.ai/",
+    "totalTime": "<processing_time>",
+    "status": "success" | "error",
+    "message": "...",
+    "data": "<payload>",
+    "error": { ... }   // only present for error responses
+}
+```
+
+## Authentication
+
+All requests require an API key in the header:
+
+```python
+headers = {
+    "thrads-api-key": "YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+```
+
+Missing or invalid keys result in standard error responses.
+
+## Rate Limits and Performance
+
+- Monitor the `totalTime` field to track API performance
+- Implement proper error handling for network timeouts and API errors
+- Use `production: true` for live traffic to enable proper token generation
+- Use `production: false` for testing to avoid skewing analytics
+- Cache responses when appropriate to reduce API calls
+
+## Advanced Features
+
+### Custom Search Length
+
+Control the length of sponsored search prompts:
+
+```python
+payload = {
+    "userId": "user123",
+    "metaData": {"category": "electronics"},
+    "max_length": 50,  # Shorter prompts for mobile
+    "production": True
+}
+```
+
+### Keyword-Only Mode
+
+Get just the keywords without the natural language prompt:
+
+```python
+payload = {
+    "userId": "user123",
+    "metaData": {"category": "home decor"},
+    "return_keywords_search": True,
+    "production": True
+}
+
+# Use the "keyword_search" field from the response
+```
+
+For detailed API specifications, please refer to the [API Reference](/api-reference/endpoint/search).
