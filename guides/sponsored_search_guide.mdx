@@ -111,7 +111,17 @@ Use this endpoint to track user engagement with sponsored search prompts. This i
 - `clicked` (boolean): Whether the user clicked on the sponsored content
 - `user_search` (string): The actual search query performed by the user
 
-### Code Example
+<Note>
+  **Important**: The `clicked` and `user_search` parameters are mutually
+  exclusive: - If `clicked=true`: The user clicked on the suggested search
+  prompt, so don't include `user_search` (we already know what they searched
+  for) - If `clicked=false` or not clicked: Include `user_search` to track what
+  the user actually searched for instead
+</Note>
+
+### Code Examples
+
+**When user clicks on the sponsored search prompt:**
 
 ```python
 import requests
@@ -120,7 +130,29 @@ url = "https://dev.thrads.ai/api/v1/search/feedback/"
 
 payload = {
     "token": "<signed-token>",
-    "clicked": True,
+    "clicked": True
+    # Don't include user_search when clicked=True
+}
+
+headers = {
+    "thrads-api-key": "YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+print(response.text)
+```
+
+**When user doesn't click but performs a different search:**
+
+```python
+import requests
+
+url = "https://dev.thrads.ai/api/v1/search/feedback/"
+
+payload = {
+    "token": "<signed-token>",
+    "clicked": False,
     "user_search": "minimalist shelves for living room"
 }
 
@@ -207,14 +239,21 @@ Always track user interactions to provide feedback:
 
 ```python
 def track_search_interaction(token, clicked=False, user_search=None):
-    """Track user interaction with sponsored search"""
+    """Track user interaction with sponsored search
+
+    Args:
+        token: The signed token from the original search ad response
+        clicked: Whether the user clicked on the sponsored search prompt
+        user_search: The actual search query performed (only when clicked=False)
+    """
 
     feedback_payload = {
         "token": token,
         "clicked": clicked
     }
 
-    if user_search:
+    # Only include user_search if the user didn't click on the sponsored prompt
+    if not clicked and user_search:
         feedback_payload["user_search"] = user_search
 
     try:
@@ -236,14 +275,14 @@ def track_search_interaction(token, clicked=False, user_search=None):
         print(f"Failed to track feedback: {e}")
 
 # Usage examples:
-# User clicked on sponsored search
+# User clicked on sponsored search prompt
 track_search_interaction(token, clicked=True)
 
-# User performed a search (whether they clicked or not)
+# User didn't click but performed a different search
 track_search_interaction(token, clicked=False, user_search="minimalist shelves for living room")
 
-# User clicked and then searched
-track_search_interaction(token, clicked=True, user_search="minimalist shelves")
+# User didn't click and didn't search (no action needed for user_search)
+track_search_interaction(token, clicked=False)
 ```
 
 ## Integration Patterns

@@ -107,12 +107,26 @@ Missing or invalid keys result in standard error responses.
 - `clicked` (boolean): Whether the user clicked on the sponsored content
 - `user_search` (string): The actual search query performed by the user
 
-**Example Request**:
+**Important**: The `clicked` and `user_search` parameters are mutually exclusive:
+
+- If `clicked=true`: The user clicked on the suggested search prompt, so don't include `user_search` (we already know what they searched for)
+- If `clicked=false` or not clicked: Include `user_search` to track what the user actually searched for instead
+
+**Example Request (when user clicks on sponsored search prompt)**:
 
 ```json
 {
   "token": "<signed-token>",
-  "clicked": true,
+  "clicked": true
+}
+```
+
+**Example Request (when user doesn't click but performs different search)**:
+
+```json
+{
+  "token": "<signed-token>",
+  "clicked": false,
   "user_search": "minimalist shelves for living room"
 }
 ```
