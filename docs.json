@@ -48,14 +48,14 @@
             "group": "Integration Guides",
             "pages": [
               "guides/sponsored_messages_guide",
-              "guides/sponsored_prompts_guide",
-              "guides/sponsored_search_guide"
+              "guides/sponsored_prompts_guide"
             ]
           },
           {
             "group": "Vibe Integration ✌️",
             "pages": [
-              "guides/vibe_integration_prompts"
+              "guides/vibe_integration_prompts",
+              "guides/vibe_integration_context"
             ]
           }
         ]

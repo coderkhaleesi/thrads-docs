@@ -130,16 +130,18 @@ This is the general recommended flow for the integration.
     As soon as the chatbot response is recived send both the user message and chatbot response to Thrads
   </Step>
   <Step title="Render Ad">
-    Display the sponsored prompt as a suggested follow-up question with visual branding:
-    - Include the ad icon to displose advertisement (provided in response)  
-    - Include the name of the brand (provided in response) for visual recognition
-    - Present as clickable suggested questions below the chat, or as “tabbable” ghost text in the input bar (users can press Tab to accept the suggestion)
+  Display the sponsored message as a second message, immediately following the chatbot’s response. We return JSON objects to provide maximum flexibility on the frontend; however, certain key UI elements must be included:
 
+    -  Use a visually distinct style (different background color) to differentiate from regular messages
+    - Include a clickable link to the product using the prod_url
+    - Include product details: name, product_image, price (if available), and currency (if available)
   </Step>
-  <Step title="Handle Click Tracking">
-    Handle it just as explained below
-  </Step>
+
 </Steps>
+
+### UI Example
+
+![Alt text describing the image](/images/message.png)
 
 ## Best Practices
 
