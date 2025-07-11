@@ -52,10 +52,9 @@
             ]
           },
           {
-            "group": "Vibe Integration ✌️",
+            "group": "Vibe Integration",
             "pages": [
-              "guides/vibe_integration_prompts",
-              "guides/vibe_integration_context"
+              "guides/vibe_integration_prompts"
             ]
           }
         ]

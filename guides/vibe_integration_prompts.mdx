@@ -1,48 +1,71 @@
 ---
-title: 'Thrads Integration Prompt Library '
-description: 'Learn how to integrate sponsored prompts into your conversational AI application.'
+title: "AI Coding Assistant Prompts"
+description: "Ready-to-use prompts for AI coding assistants to help implement Thrads API integration"
 ---
 
+# AI Coding Assistant Prompts for Thrads Integration
 
-## Prompt&nbsp;1 – **Pick the right endpoint**
+Copy-paste prompts for Claude, ChatGPT, or any AI coding assistant
 
-> “Given the following API documentation, list which single endpoint best fits each of these actions in my app:  
-> • showing a sponsored suggestion after a search query  
-> • inserting a branded message inside an ongoing chat  
-> • redirecting a user once they click an ad  
->   
-> For each mapping, outline the **minimum request payload**, the expected success response shape, and any required authentication headers. Keep the answer technology-agnostic.”
+Use these prompts when you already know what Thrads functionality you want to integrate and need implementation help from an AI coding assistant.
 
----
+### How to use these prompts
 
-## Prompt&nbsp;2 – **Generate boilerplate call + handler**
+1.⁠ ⁠*Choose your prompt* based on what you want to implement
+2.⁠ ⁠*Replace placeholders* with your specific technology stack
+3.⁠ ⁠*Copy the respective guide* from our itegration guides
+4.⁠ ⁠*Paste both* into your AI coding assistant
+5.⁠ ⁠*Refine the output* to match your coding standards and architecture
 
-> “Using the docs below, produce a **framework-neutral** code sketch that:  
-> 1) builds the request body with placeholders for all *required* fields,  
-> 2) sends the call with exponential-backoff retries,  
-> 3) parses the response and extracts the ad creative, token, and any tracking URLs, and  
-> 4) exposes a simple `handleAdClick(token)` stub that reports the click.  
->   
-> Return the answer in plain pseudocode so it can be ported to any language.”
+### Pro Tips
 
----
-
-## Prompt&nbsp;3 – **Drop-in middleware outline**
-
-> “Write a high-level middleware/adapter pattern—no specific language—that sits between my search/chat UI and the Thrads API. Describe:  
-> • where to intercept user input,  
-> • how to check an **ad frequency limit** before calling the API,  
-> • where to slot the sponsored content back into the UI flow, and  
-> • how to log impressions and clicks for analytics later.  
->   
-> Keep it architecture-agnostic (can apply to REST, GraphQL, or WebSocket setups). Bullet points only.”
+•⁠  ⁠Always specify your exact framework/language for better code generation
+•⁠  ⁠Include your existing code patterns or style guide for consistency
+•⁠  ⁠Ask for TypeScript definitions if you're using typed languages
+•⁠  ⁠Request specific error handling patterns that match your app's architecture
+•⁠  ⁠For large integrations, break it into smaller prompts focusing on one aspect at a time
 
 ---
 
-### How to use
+## Prompt&nbsp;1 – *Implement API Integration*
 
-1. Copy one prompt.  
-2. Paste your up-to-date Thrads documentation right below it.  
-3. (Optional) Specify your preferred language/framework.  
-4. Refine the generated scaffold to match your data models & style guide.
+"Based on the Thrads API documentation below, implement a complete integration for [SPECIFY: sponsored search/messages/prompts] in [YOUR LANGUAGE/FRAMEWORK]. Include:
 
+•⁠  ⁠Complete request/response handling with proper error handling
+•⁠  ⁠Token management for click tracking
+•⁠  ⁠Production vs sandbox mode configuration
+•⁠  ⁠Rate limiting and retry logic
+•⁠  ⁠Type definitions/interfaces if applicable
+
+Make it production-ready with proper logging and follow best practices for [YOUR FRAMEWORK]. Here's the API documentation:"
+
+---
+
+## Prompt&nbsp;2 – *Create UI Components*
+
+"Build reusable UI components for displaying Thrads sponsored content. Using the API response format below, create:
+
+•⁠  ⁠Sponsored search suggestion component with proper styling
+•⁠  ⁠Sponsored message/prompt display with brand attribution
+•⁠  ⁠Click-to-redirect handling with analytics
+•⁠  ⁠Loading states and error fallbacks
+•⁠  ⁠Accessibility compliance (ARIA labels, keyboard navigation)
+
+Make components framework-agnostic [OR: for React/Vue/Angular]. Here's the API response structure:"
+
+---
+
+## Prompt&nbsp;3 – *Build Testing & Development Setup*
+
+"Set up a complete testing and development environment for Thrads integration. Based on the API docs below, create:
+
+•⁠  ⁠Mock API responses for development/testing
+•⁠  ⁠Unit tests covering all integration points
+•⁠  ⁠E2E tests for user interaction flows
+•⁠  ⁠Sandbox vs production environment switching
+•⁠  ⁠Performance benchmarks for API response times
+•⁠  ⁠Debug logging and monitoring setup
+
+Include examples of how to test ad frequency limits and click tracking. Here's the API documentation:"
+
+---
