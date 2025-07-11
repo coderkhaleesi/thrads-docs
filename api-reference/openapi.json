@@ -15,11 +15,11 @@
         "operationId": "health_check_health_get",
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
-
+                  "$ref": "#/components/schemas/APIResponse"
                 }
               }
             }
@@ -36,11 +36,11 @@
         "operationId": "read_root__get",
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
-
+                  "$ref": "#/components/schemas/APIResponse"
                 }
               }
             }
@@ -55,7 +55,7 @@
           "sponsored-search-prompt"
         ],
         "summary": "Get Sponsored Search Prompt",
-        "description": "Retrieves a sponsored search prompt with product information for display in search results. Returns creative content, product details, and optional keyword search data based on user preferences and metadata. Supports frequency limiting and regional targeting.",
+        "description": "",
         "operationId": "get_sponsored_search_prompt_api_v1_search_get_ad__post",
         "requestBody": {
           "content": {
@@ -69,7 +69,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -79,7 +79,17 @@
             }
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -89,17 +99,17 @@
             }
           },
           "422": {
-            "description": "Validation Error",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
+                  "$ref": "#/components/schemas/APIValidationErrorResponse"
                 }
               }
             }
           },
           "500": {
-            "description": "Internal Server Error",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -118,7 +128,7 @@
           "sponsored-search-feedback"
         ],
         "summary": "Submit Sponsored Search Feedback",
-        "description": "Collects user feedback on sponsored search results to improve targeting and relevance. Accepts click/interaction data along with optional search context. Uses signed tokens for secure feedback attribution and prevents fraud.",
+        "description": "",
         "operationId": "sponsored_search_feedback_api_v1_search_feedback__post",
         "requestBody": {
           "content": {
@@ -132,21 +142,51 @@
         },
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
-
+                  "$ref": "#/components/schemas/APIResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
                 }
               }
             }
           },
           "422": {
-            "description": "Validation Error",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
+                  "$ref": "#/components/schemas/APIValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
                 }
               }
             }
@@ -161,7 +201,7 @@
           "sponsored-chatbot-prompt"
         ],
         "summary": "Get Sponsored Chatbot Prompt",
-        "description": "Generates a contextual sponsored prompt for integration into chatbot conversations. Returns a tailored prompt with brand information, tracking token, and visual assets. Considers conversation history, user preferences, and ad frequency limits to deliver relevant sponsored content.",
+        "description": "",
         "operationId": "get_sponsored_chatbot_prompt_api_v1_prompt_get_ad__post",
         "requestBody": {
           "content": {
@@ -175,7 +215,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -185,7 +225,17 @@
             }
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -195,17 +245,17 @@
             }
           },
           "422": {
-            "description": "Validation Error",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
+                  "$ref": "#/components/schemas/APIValidationErrorResponse"
                 }
               }
             }
           },
           "500": {
-            "description": "Internal Server Error",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -224,7 +274,7 @@
           "sponsored-prompt-click"
         ],
         "summary": "Register Sponsored Prompt Click",
-        "description": "Records user interaction with a sponsored chatbot prompt for analytics and billing purposes. Accepts a signed token to securely track clicks and measure engagement. Used for performance monitoring and advertiser reporting.",
+        "description": "",
         "operationId": "sponsored_chatbot_prompt_click_api_v1_prompt_click__post",
         "requestBody": {
           "content": {
@@ -238,21 +288,51 @@
         },
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
-
+                  "$ref": "#/components/schemas/APIResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
                 }
               }
             }
           },
           "422": {
-            "description": "Validation Error",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
+                  "$ref": "#/components/schemas/APIValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
                 }
               }
             }
@@ -267,7 +347,7 @@
           "sponsored-message"
         ],
         "summary": "Get Sponsored Message",
-        "description": "Retrieves a sponsored message with product recommendations for display in chat interfaces. Returns creative content, product information, and media assets tailored to the conversation context. Supports personalization based on user region, conversation history, and targeting preferences.",
+        "description": "",
         "operationId": "get_sponsored_message_api_v1_message_get_ad__post",
         "requestBody": {
           "content": {
@@ -281,7 +361,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -291,7 +371,17 @@
             }
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -301,17 +391,17 @@
             }
           },
           "422": {
-            "description": "Validation Error",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
+                  "$ref": "#/components/schemas/APIValidationErrorResponse"
                 }
               }
             }
           },
           "500": {
-            "description": "Internal Server Error",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -345,21 +435,51 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
-
+                  "$ref": "#/components/schemas/APIResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
                 }
               }
             }
           },
           "422": {
-            "description": "Validation Error",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
+                  "$ref": "#/components/schemas/APIValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
                 }
               }
             }
@@ -387,7 +507,8 @@
         "properties": {
           "token": {
             "type": "string",
-            "title": "Token"
+            "title": "Token",
+            "description": "Signed token from the original sponsored prompt response for secure click tracking and analytics"
           }
         },
         "additionalProperties": false,
@@ -395,19 +516,22 @@
         "required": [
           "token"
         ],
-        "title": "SponsoredChatbotPromptClickRequest"
+        "title": "SponsoredChatbotPromptClickRequest",
+        "description": "Request model for tracking clicks on sponsored chatbot prompts using secure tokens"
       },
       "SponsoredChatbotPromptRequest": {
         "properties": {
           "userId": {
             "type": "string",
             "maxLength": 100,
-            "title": "Userid"
+            "title": "User ID",
+            "description": "Unique identifier for the user requesting the sponsored prompt. Must be the same for the same user across all conversations."
           },
           "chatId": {
             "type": "string",
             "maxLength": 100,
-            "title": "Chatid"
+            "title": "Chat ID",
+            "description": "Unique identifier for the chat session or conversation. Must be the same across the same conversation."
           },
           "userRegion": {
             "anyOf": [
@@ -418,21 +542,32 @@
                 "type": "null"
               }
             ],
-            "title": "Userregion"
+            "title": "User Region",
+            "description": "Geographic region of the user for localized ad targeting. Should be an ISO 3166-1 alpha-2 country code (e.g., 'US', 'GB', 'DE', 'JP')"
           },
           "content": {
             "anyOf": [
               {
-                "additionalProperties": {
-                  "type": "string"
+                "type": "object",
+                "properties": {
+                  "user": {
+                    "type": "string",
+                    "description": "The user's message in the conversation"
+                  },
+                  "chatbot": {
+                    "type": "string", 
+                    "description": "The chatbot's response message"
+                  }
                 },
-                "type": "object"
+                "required": ["user", "chatbot"],
+                "additionalProperties": false
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Content"
+            "title": "Content",
+            "description": "Conversation context MUST contain exactly two fields: 'user' and 'chatbot', both populated with strings representing the latest message exchange"
           },
           "metaData": {
             "anyOf": [
@@ -446,7 +581,8 @@
                 "type": "null"
               }
             ],
-            "title": "Metadata"
+            "title": "Metadata",
+            "description": "Additional context about user interests, conversation topic, or targeting preferences"
           },
           "force": {
             "anyOf": [
@@ -457,25 +593,29 @@
                 "type": "null"
               }
             ],
-            "title": "Force"
+            "title": "Force",
+            "description": "If set to true it forces the ad generation regardless of frequency limits or other constraints. If set to false it inhibits the ad generation. Default is set to null which does not affect the ad generation"
           },
           "conversationOffset": {
             "type": "integer",
             "maximum": 20,
             "minimum": 0,
-            "title": "Conversationoffset",
+            "title": "Conversation Offset",
+            "description": "Number of conversation turns to wait before showing the first ad",
             "default": 2
           },
           "adFrequencyLimit": {
             "type": "integer",
             "maximum": 20,
             "minimum": 0,
-            "title": "Adfrequencylimit",
+            "title": "Ad Frequency Limit",
+            "description": "Number of turns to wait before showing the next ad",
             "default": 5
           },
           "production": {
             "type": "boolean",
             "title": "Production",
+            "description": "Whether this is a production request (true) or sandbox/testing (false). Only production requests count for monetization.",
             "default": false
           },
           "max_length": {
@@ -487,7 +627,8 @@
                 "type": "null"
               }
             ],
-            "title": "Max Length"
+            "title": "Max Length",
+            "description": "Maximum length of the generated prompt text in characters"
           }
         },
         "additionalProperties": false,
@@ -497,19 +638,21 @@
           "chatId"
         ],
         "title": "SponsoredChatbotPromptRequest",
-        "description": "Request model for sponsored chatbot prompts"
+        "description": "Request model for sponsored chatbot prompts with conversation context and targeting options"
       },
       "SponsoredMessageChatbotRequest": {
         "properties": {
           "userId": {
             "type": "string",
             "maxLength": 100,
-            "title": "Userid"
+            "title": "User ID",
+            "description": "Unique identifier for the user requesting the sponsored message. Must be the same for the same user across all conversations."
           },
           "chatId": {
             "type": "string",
             "maxLength": 100,
-            "title": "Chatid"
+            "title": "Chat ID",
+            "description": "Unique identifier for the chat session or conversation. Must be the same across the same conversation."
           },
           "userRegion": {
             "anyOf": [
@@ -520,16 +663,25 @@
                 "type": "null"
               }
             ],
-            "title": "Userregion"
+            "title": "User Region",
+            "description": "Geographic region of the user for localized ad targeting. Should be an ISO 3166-1 alpha-2 country code (e.g., 'US', 'GB', 'DE', 'JP')"
           },
           "content": {
-            "additionalProperties": {
-              "type": "string"
-            },
             "type": "object",
-            "maxProperties": 2,
-            "minProperties": 2,
-            "title": "Content"
+            "properties": {
+              "user": {
+                "type": "string",
+                "description": "The user's message in the conversation"
+              },
+              "chatbot": {
+                "type": "string",
+                "description": "The chatbot's response message"
+              }
+            },
+            "required": ["user", "chatbot"],
+            "additionalProperties": false,
+            "title": "Content",
+            "description": "Required conversation context MUST contain exactly two fields: 'user' and 'chatbot', both populated with strings representing the latest message exchange"
           },
           "metaData": {
             "anyOf": [
@@ -543,7 +695,8 @@
                 "type": "null"
               }
             ],
-            "title": "Metadata"
+            "title": "Metadata",
+            "description": "Additional context about user interests, conversation topic, or targeting preferences"
           },
           "force": {
             "anyOf": [
@@ -554,25 +707,29 @@
                 "type": "null"
               }
             ],
-            "title": "Force"
+            "title": "Force",
+            "description": "If set to true it forces the ad generation regardless of frequency limits or other constraints. If set to false it inhibits the ad generation. Default is set to null which does not affect the ad generation"
           },
           "conversationOffset": {
             "type": "integer",
             "maximum": 20,
             "minimum": 0,
-            "title": "Conversationoffset",
+            "title": "Conversation Offset",
+            "description": "Number of conversation turns to wait before showing the first ad",
             "default": 2
           },
           "adFrequencyLimit": {
             "type": "integer",
             "maximum": 20,
             "minimum": 0,
-            "title": "Adfrequencylimit",
+            "title": "Ad Frequency Limit",
+            "description": "Number of turns to wait before showing the next ad",
             "default": 5
           },
           "production": {
             "type": "boolean",
             "title": "Production",
+            "description": "Whether this is a production request (true) or sandbox/testing (false). Only production requests count for monetization.",
             "default": false
           }
         },
@@ -584,17 +741,19 @@
           "content"
         ],
         "title": "SponsoredMessageChatbotRequest",
-        "description": "Request model for sponsored chatbot prompts"
+        "description": "Request model for sponsored chatbot messages with required conversation context and targeting options"
       },
       "SponsoredSearchFeedbackRequest": {
         "properties": {
           "token": {
             "type": "string",
-            "title": "Token"
+            "title": "Token",
+            "description": "Signed token from the original search ad response for secure feedback attribution"
           },
           "clicked": {
             "type": "boolean",
-            "title": "Clicked"
+            "title": "Clicked",
+            "description": "Whether the user clicked on the sponsored search result or suggestion"
           },
           "user_search": {
             "anyOf": [
@@ -605,7 +764,8 @@
                 "type": "null"
               }
             ],
-            "title": "User Search"
+            "title": "User Search",
+            "description": "The actual search query performed by the user (optional, used when user didn't click the suggestion)"
           }
         },
         "additionalProperties": false,
@@ -614,13 +774,15 @@
           "token",
           "clicked"
         ],
-        "title": "SponsoredSearchFeedbackRequest"
+        "title": "SponsoredSearchFeedbackRequest",
+        "description": "Request model for submitting feedback on sponsored search results with click tracking and optional search context"
       },
       "SponsoredSearchPromptRequest": {
         "properties": {
           "userId": {
             "type": "string",
-            "title": "Userid"
+            "title": "User ID",
+            "description": "Unique identifier for the user requesting the sponsored search prompt. Must be the same for the same user across all conversations."
           },
           "metaData": {
             "anyOf": [
@@ -634,24 +796,27 @@
                 "type": "null"
               }
             ],
-            "title": "Metadata"
+            "title": "Metadata",
+            "description": "Additional context about user interests, search intent, or targeting preferences"
           },
           "max_length": {
             "type": "integer",
             "maximum": 4096,
             "exclusiveMinimum": 0,
             "title": "Max Length",
-            "description": "Maximum length of the prompt.",
+            "description": "Maximum length of the generated search prompt in characters",
             "default": 1024
           },
           "production": {
             "type": "boolean",
             "title": "Production",
+            "description": "Whether this is a production request (true) or sandbox/testing (false). Only production requests count for monetization.",
             "default": false
           },
           "return_keywords_search": {
             "type": "boolean",
             "title": "Return Keywords Search",
+            "description": "Whether to include suggested search keywords in the response for enhanced search functionality",
             "default": false
           }
         },
@@ -660,7 +825,8 @@
         "required": [
           "userId"
         ],
-        "title": "SponsoredSearchPromptRequest"
+        "title": "SponsoredSearchPromptRequest",
+        "description": "Request model for sponsored search prompts with optional keyword suggestions and targeting options"
       },
       "APIResponse": {
         "properties": {
@@ -692,13 +858,14 @@
           },
           "status": {
             "type": "string",
+            "enum": ["success"],
             "title": "Status",
-            "description": "Request status: 'success' for successful requests, 'error' for failed requests"
+            "description": "Always 'success' for successful requests"
           },
           "message": {
             "type": "string",
             "title": "Message",
-            "description": "Human-readable message describing the response or error"
+            "description": "Human-readable message describing the successful response"
           },
           "data": {
             "type": "object",
@@ -718,14 +885,14 @@
           "data"
         ],
         "title": "APIResponse",
-        "description": "Standard response wrapper for all Thrads API endpoints"
+        "description": ""
       },
       "SponsoredMessageData": {
         "properties": {
           "creative": {
             "type": "string",
             "title": "Creative",
-            "description": "The marketing creative content or message text to display"
+            "description": "The message text generated"
           },
           "prod_name": {
             "type": "string",
@@ -735,7 +902,7 @@
           "img_url": {
             "type": "string",
             "title": "Image URL",
-            "description": "URL to the product image or promotional graphic"
+            "description": "URL to the product image"
           },
           "prod_url": {
             "type": "string",
@@ -751,7 +918,7 @@
           "prod_url"
         ],
         "title": "SponsoredMessageData",
-        "description": "Product information and creative content for sponsored messages"
+        "description": ""
       },
       "SponsoredMessageResponse": {
         "allOf": [
@@ -804,7 +971,7 @@
           "prod_url"
         ],
         "title": "SponsoredSearchData",
-        "description": "Product information and creative content for sponsored search results with optional keyword data"
+        "description": ""
       },
       "SponsoredSearchResponse": {
         "allOf": [
@@ -826,7 +993,7 @@
           "prompt": {
             "type": "string",
             "title": "Prompt",
-            "description": "The AI-generated contextual prompt text tailored for the conversation"
+            "description": "The generated prompt"
           },
           "link": {
             "type": "string",
@@ -841,7 +1008,7 @@
           "icon": {
             "type": "string",
             "title": "Icon",
-            "description": "URL to the brand logo or icon image for visual branding"
+            "description": "URL to the ad icon image"
           },
           "token": {
             "type": "string",
@@ -915,14 +1082,27 @@
             "description": "Human-readable error message describing what went wrong"
           },
           "data": {
-            "type": "null",
+            "type": "object",
             "title": "Data",
-            "description": "Always null for error responses"
+            "description": "Always empty object for error responses"
           },
           "error": {
             "type": "object",
-            "title": "Error",
-            "description": "Detailed error information including error codes, types, and additional context"
+            "properties": {
+              "type": {
+                "type": "string",
+                "title": "Error Type",
+                "description": "Type of error that occurred"
+              },
+              "code": {
+                "type": "integer",
+                "title": "Error Code",
+                "description": "Numeric error code for programmatic handling"
+              }
+            },
+            "required": ["type", "code"],
+            "title": "Error Details",
+            "description": "Structured error information with type and code"
           }
         },
         "type": "object",
@@ -939,6 +1119,82 @@
         ],
         "title": "APIErrorResponse",
         "description": "Standard error response wrapper for failed API requests with detailed error information"
+      },
+      "APIValidationErrorResponse": {
+        "properties": {
+          "apiVersion": {
+            "type": "string",
+            "title": "API Version",
+            "description": "Version of the Thrads API being used"
+          },
+          "requestId": {
+            "type": "string",
+            "title": "Request ID",
+            "description": "Unique identifier for this API request for tracking and debugging"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp",
+            "description": "ISO 8601 timestamp when the validation error occurred"
+          },
+          "docsUrl": {
+            "type": "string",
+            "title": "Documentation URL",
+            "description": "URL to the API documentation for reference"
+          },
+          "totalTime": {
+            "type": "number",
+            "title": "Total Time",
+            "description": "Total processing time before validation failed in seconds"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["error"],
+            "title": "Status",
+            "description": "Always 'error' for validation error responses"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Human-readable validation error message"
+          },
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "description": "Always empty object for validation error responses"
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "detail": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ValidationError"
+                },
+                "title": "Detail",
+                "description": "List of validation errors with field locations and messages"
+              }
+            },
+            "required": ["detail"],
+            "title": "Validation Error Details",
+            "description": "Structured validation error information"
+          }
+        },
+        "type": "object",
+        "required": [
+          "apiVersion",
+          "requestId",
+          "timestamp",
+          "docsUrl",
+          "totalTime",
+          "status",
+          "message",
+          "data",
+          "error"
+        ],
+        "title": "APIValidationErrorResponse",
+        "description": "Standard validation error response wrapper with detailed field validation errors"
       },
       "ValidationError": {
         "properties": {

@@ -1,487 +1,292 @@
 ---
-title: "Sponsored Search Integration Guide"
-description: "Learn how to integrate sponsored search prompts into your search applications using the Thrads API."
+title: 'Sponsored Search Integration'
+description: 'Learn how to integrate sponsored search into your application.'
 ---
 
-This guide provides comprehensive instructions on integrating sponsored search prompts within your search applications. Sponsored search prompts suggest relevant queries and search terms to users, helping them discover products and services through natural search interactions.
+# When to use sponsored search
+
+Sponsored search uses contextual information to generate a suggested sponsored prompt for the user.
+If the user clicks you get the moeny.
+
+Sponsored search has two main use cases:
+- Traditional search bar: a suggested prompt is provided and can be shown as a suggested search in the search bar. 
+The ensdpoint also returns the equivalent "keyword search" which will be used by your backend to do the actual search.
+
+- One sho generative platforms: 
 
 ## Production vs. Sandbox Mode
 
 <Note intent="warning">
-  **Important:** When integrating sponsored search, it's crucial to distinguish
-  between production and sandbox (non-production) environments. - In **sandbox
-  mode** (`production=False`), ads are returned for testing purposes but are
-  **not counted for monetization**. - In **production mode**
-  (`production=True`), ads are live and contribute to monetization. Always
-  ensure `production=True` is used *only* in your live production environment.
-  For all testing and development, set `production=False`.
+  **Important:** When integrating sponsored messages, it's crucial to distinguish between production and sandbox (non-production) environments.
+  - In **sandbox mode** (`production=False`), ads are returned for testing purposes but are **not counted for monetization**.
+  - In **production mode** (`production=True`), ads are live and contribute to monetization.
+  Always ensure `production=True` is used *only* in your live production environment. For all testing and development, set `production=False`.
 </Note>
 
-## When to Use Sponsored Search
+## Using Sponsored Prompts
 
-Sponsored search is ideal for:
+Sponsored prompts can be incorporated into your AI conversations in two primary ways: as an initial opener or as contextual follow-up questions.
 
-- Search result pages
-- Search suggestion dropdowns
-- When users express search intent in conversation
-- Helping users discover relevant products and services
-- Enhancing search experiences with targeted suggestions
+<Tabs>
+  <Tab title="Sponsored Opener">
+    ### Starting Conversations with Sponsored Openers
 
-## Getting Sponsored Search Prompts
+    You can use the sponsored question endpoint to generate an "opener" – a question to initiate a conversation.
 
-### Endpoint: POST /api/v1/search/get-ad/
+    **Key Points:**
+    - **No Context Needed:** Simply call the endpoint without any prior conversational context.
+    - **Tailored for Your App:** The API will provide a sponsored question suitable for your application, yet conversation-agnostic.
+    - **Unaffected by `conversationalOffset` and `adFrequency` and `force`:** These parameters do not influence the behavior of opener prompts.
 
-Use this endpoint when users perform searches or when you want to suggest sponsored search queries.
+    **Code Example:**
+<CodeGroup>
 
-**Required Fields:**
-
-- `userId` (string): Unique identifier for the user
-
-**Optional Fields:**
-
-- `metaData` (object): Additional context about the user or search intent
-- `max_length` (integer): Maximum length of the generated prompt
-- `production` (boolean): Whether this is a production request (affects token generation)
-- `return_keywords_search` (boolean): Whether to return suggested search keywords
-
-### Code Example
-
-```python
+```python Python
 import requests
 
-url = "https://dev.thrads.ai/api/v1/search/get-ad/"
+url = "https://dev.thrads.ai/api/v1/prompt/get-ad/"
 
 payload = {
-    "userId": "searcher1",
-    "metaData": {
-        "category": "home decor",
-        "user_interests": "minimalist, modern",
-        "search_context": "living room furniture"
-    },
-    "return_keywords_search": True,
-    "max_length": 100,
-    "production": True
+    "userId": "123",
+    "chatId": "123"
 }
-
 headers = {
-    "thrads-api-key": "YOUR_API_KEY",
+    "Thrads-Api-Key": "YOUR_API_KEY",
     "Content-Type": "application/json"
 }
 
-response = requests.post(url, json=payload, headers=headers)
+response = requests.request("POST", url, json=payload, headers=headers)
+
 print(response.text)
 ```
 
-### Example Response
+```javascript JavaScript
+const url = "https://dev.thrads.ai/api/v1/prompt/get-ad/";
 
-```json
-{
-  "apiVersion": "0.1.0",
-  "requestId": "77c1e364-...",
-  "timestamp": "2024-06-02T10:24:00Z",
-  "docsUrl": "https://preview-docs.thrads.ai/",
-  "totalTime": 0.4,
-  "status": "success",
-  "message": "Request successful",
-  "data": {
-    "prompt": "Looking for minimalist shelving ideas?",
-    "keyword_search": "minimalist shelves",
-    "link": "https://www.muji.com",
-    "brand": "Muji",
-    "rationale": "Muji specializes in minimalist home goods",
-    "token": "<signed-token>"
-  }
-}
+const payload = {
+    "userId": "123",
+    "chatId": "123"
+};
+
+const headers = {
+    "Thrads-Api-Key": "YOUR_API_KEY",
+    "Content-Type": "application/json"
+};
+
+const response = await fetch(url, {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify(payload)
+});
+
+const result = await response.text();
+console.log(result);
 ```
 
-## Tracking User Engagement
+</CodeGroup>
+  </Tab>
+  <Tab title="Sponsored Follow-up">
+    ### Incorporating Sponsored Follow-up Prompts
 
-### Endpoint: POST /api/v1/search/feedback/
+    To provide relevant sponsored content during an ongoing conversation, use the endpoint for follow-up prompts.
 
-Use this endpoint to track user engagement with sponsored search prompts. This is essential for measuring effectiveness and optimizing ad targeting.
+    **Key Points:**
+    - **Context is Crucial:** Call this endpoint after each AI-generated response.
+    <Note intent="warning">
+    **Important:** You must call the endpoint at every turn—even if the ad isn't wanted (configurable via settings like `adFrequency`, explained below). This enables conversation tracking, ensures relevant follow-ups, and maintains ad effectiveness. Skipping it degrades performance and monetization.
+   </Note>
 
-**Required Fields:**
+    - **Control Ad Frequency:** Manage the number of ads shown using the `adFrequency` and `conversationalOffset` parameters.
+    - **`force` Parameter:** Use the `force` parameter if you need to override default frequency settings for specific scenarios.
 
-- `token` (string): The signed token from the original search ad response
+    **Code Example:**
+<CodeGroup>
 
-**Optional Fields:**
-
-- `clicked` (boolean): Whether the user clicked on the sponsored content
-- `user_search` (string): The actual search query performed by the user
-
-<Note>
-  **Important**: The `clicked` and `user_search` parameters are mutually
-  exclusive: - If `clicked=true`: The user clicked on the suggested search
-  prompt, so don't include `user_search` (we already know what they searched
-  for) - If `clicked=false` or not clicked: Include `user_search` to track what
-  the user actually searched for instead
-</Note>
-
-### Code Examples
-
-**When user clicks on the sponsored search prompt:**
-
-```python
+```python Python
 import requests
 
-url = "https://dev.thrads.ai/api/v1/search/feedback/"
+url = "https://dev.thrads.ai/api/v1/prompt/get-ad/"
 
 payload = {
-    "token": "<signed-token>",
-    "clicked": True
-    # Don't include user_search when clicked=True
+    "production": True,
+    "conversationOffset": 2,
+    "adFrequencyLimit": 2,
+    "userId": "123",
+    "chatId": "123",
+    "userRegion": "US",
+    "content": {
+        "user": "User message",
+        "chatbot": "Bot message"
+    }
 }
-
 headers = {
-    "thrads-api-key": "YOUR_API_KEY",
+    "Thrads-Api-Key": "YOUR_API_KEY",
     "Content-Type": "application/json"
 }
 
-response = requests.post(url, json=payload, headers=headers)
+response = requests.request("POST", url, json=payload, headers=headers)
+
 print(response.text)
 ```
 
-**When user doesn't click but performs a different search:**
+```javascript JavaScript
+const url = "https://dev.thrads.ai/api/v1/prompt/get-ad/";
 
-```python
+const payload = {
+    "production": true,
+    "conversationOffset": 2,
+    "adFrequencyLimit": 2,
+    "userId": "123",
+    "chatId": "123",
+    "userRegion": "US",
+    "content": {
+        "user": "User message",
+        "chatbot": "Bot message"
+    }
+};
+
+const headers = {
+    "Thrads-Api-Key": "YOUR_API_KEY",
+    "Content-Type": "application/json"
+};
+
+const response = await fetch(url, {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify(payload)
+});
+
+const result = await response.text();
+console.log(result);
+```
+
+</CodeGroup>
+
+## Recommended Implementation Flow
+
+This is the general recommended flow for the integration.
+
+<Steps>
+  <Step title="User sends a message">
+    Capture the user message and forward to your chatbot service
+  </Step>
+  <Step title="Chatbot processes and responds">
+    Your chatbot generates and returns a response
+  </Step>
+  <Step title="Call Thrads API">
+    As soon as the chatbot response is recived send both the user message and chatbot response to Thrads
+  </Step>
+  <Step title="Render Ad">
+    Display the sponsored prompt as a suggested follow-up question with visual branding:
+    - Include the ad icon to displose advertisement (provided in response)  
+    - Include the name of the brand (provided in response) for visual recognition
+    - Present as clickable suggested questions below the chat, or as “tabbable” ghost text in the input bar (users can press Tab to accept the suggestion)
+
+  </Step>
+  <Step title="Handle Click Tracking">
+    Handle it just as explained below
+  </Step>
+</Steps>
+
+
+  </Tab>
+</Tabs>
+
+## Handling Click Tracking
+
+To ensure accurate monetization and analytics, you must track user clicks on sponsored messages.
+
+<Steps>
+  <Step title="Receive the Token">
+    The sponsored prompts endpoint (for both openers and follow-ups) returns a unique `token` along with the sponsored question. Store this token.
+  </Step>
+  <Step title="Detect User Interaction">
+    When a user clicks or taps on the displayed sponsored question.
+  </Step>
+  <Step title="Send Click Confirmation">
+    Immediately send a POST request to the `/api/v1/prompt/click/` endpoint. Include the `token` (received in Step 1) in the JSON body of your request.
+    ```json
+    {
+      "token": "THE_UNIQUE_TOKEN_RECEIVED"
+    }
+    ```
+  </Step>
+  <Step title="Receive Reward Confirmation">
+    A successful POST request to the click tracking endpoint will record the click and associate the reward.
+  </Step>
+</Steps>
+
+**Code Example for Click Tracking:**
+
+<CodeGroup>
+
+```python Python
 import requests
 
-url = "https://dev.thrads.ai/api/v1/search/feedback/"
+url = "https://api.thrads.ai/api/v1/prompt/click/"
 
-payload = {
-    "token": "<signed-token>",
-    "clicked": False,
-    "user_search": "minimalist shelves for living room"
-}
+payload = {"token": "<string>"}
+headers = {"Content-Type": "application/json"}
 
-headers = {
-    "thrads-api-key": "YOUR_API_KEY",
-    "Content-Type": "application/json"
-}
+response = requests.request("POST", url, json=payload, headers=headers)
 
-response = requests.post(url, json=payload, headers=headers)
 print(response.text)
 ```
+
+```javascript JavaScript
+const url = "https://api.thrads.ai/api/v1/prompt/click/";
+
+const payload = {"token": "<string>"};
+const headers = {"Content-Type": "application/json"};
+
+const response = await fetch(url, {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify(payload)
+});
+
+const result = await response.text();
+console.log(result);
+```
+
+</CodeGroup>
 
 ## Best Practices
 
-### 1. Provide Rich Metadata
-
-The more context you provide, the more relevant the sponsored search prompts will be:
+### 1. Use Metadata for Better Targeting
 
 ```python
-# Good - Basic context
 payload = {
     "userId": "user123",
-    "metaData": { "category": "electronics" },
-    "production": True
-}
-
-# Better - Rich context
-payload = {
-    "userId": "user123",
+    "chatId": "chat456",
+    "content": content,
     "metaData": {
-        "category": "electronics",
-        "user_interests": "gaming, productivity",
-        "search_history": "gaming mouse, mechanical keyboard",
-        "price_range": "mid-range",
-        "brand_preferences": "logitech, corsair"
+        "topic": "outdoor gear",
+        "user_interests": "camping, hiking, outdoor",
+        "conversation_stage": "gear_selection"
     },
     "production": True
 }
 ```
 
-### 2. Use Keyword Search Returns
+### 2. Control Ad Frequency (**Only for follow-up**)
 
-When `return_keywords_search` is true, you get both a natural language prompt and suggested keywords:
-
-```python
-payload = {
-    "userId": "user123",
-    "metaData": { "category": "home decor" },
-    "return_keywords_search": True,
-    "production": True
-}
-
-# Response will include both:
-# "prompt": "Looking for minimalist shelving ideas?"
-# "keyword_search": "minimalist shelves"
-```
-
-### 3. Handle Responses Gracefully
-
-```python
-response = requests.post(url, json=payload, headers=headers)
-data = response.json()
-
-if data.get("status") == "success" and data.get("data"):
-    ad_data = data["data"]
-
-    # Display the sponsored search prompt
-    prompt = ad_data.get("prompt")
-    keywords = ad_data.get("keyword_search")
-    brand = ad_data.get("brand")
-    link = ad_data.get("link")
-    token = ad_data.get("token")  # Save for feedback tracking
-
-    # Render in your search interface
-    display_sponsored_search(prompt, keywords, brand, link, token)
-else:
-    # No sponsored search available
-    print(f"No sponsored search available: {data.get('message', 'Unknown error')}")
-```
-
-### 4. Track All User Interactions
-
-Always track user interactions to provide feedback:
-
-```python
-def track_search_interaction(token, clicked=False, user_search=None):
-    """Track user interaction with sponsored search
-
-    Args:
-        token: The signed token from the original search ad response
-        clicked: Whether the user clicked on the sponsored search prompt
-        user_search: The actual search query performed (only when clicked=False)
-    """
-
-    feedback_payload = {
-        "token": token,
-        "clicked": clicked
-    }
-
-    # Only include user_search if the user didn't click on the sponsored prompt
-    if not clicked and user_search:
-        feedback_payload["user_search"] = user_search
-
-    try:
-        response = requests.post(
-            "https://dev.thrads.ai/api/v1/search/feedback/",
-            json=feedback_payload,
-            headers=headers,
-            timeout=10
-        )
-        response.raise_for_status()
-
-        data = response.json()
-        if data.get("status") == "success":
-            print("Feedback tracked successfully")
-        else:
-            print(f"Feedback tracking failed: {data.get('message')}")
-
-    except requests.exceptions.RequestException as e:
-        print(f"Failed to track feedback: {e}")
-
-# Usage examples:
-# User clicked on sponsored search prompt
-track_search_interaction(token, clicked=True)
-
-# User didn't click but performed a different search
-track_search_interaction(token, clicked=False, user_search="minimalist shelves for living room")
-
-# User didn't click and didn't search (no action needed for user_search)
-track_search_interaction(token, clicked=False)
-```
-
-## Integration Patterns
-
-### 1. Search Suggestion Dropdown
-
-```python
-def get_search_suggestions(user_id, current_query=""):
-    """Get search suggestions including sponsored content"""
-
-    # Get sponsored search prompt
-    sponsored_response = get_sponsored_search_prompt(
-        user_id=user_id,
-        metadata={"search_context": current_query}
-    )
-
-    suggestions = []
-
-    # Add regular search suggestions
-    suggestions.extend(get_regular_suggestions(current_query))
-
-    # Add sponsored suggestion if available
-    if sponsored_response:
-        suggestions.append({
-            "text": sponsored_response["prompt"],
-            "type": "sponsored",
-            "brand": sponsored_response["brand"],
-            "token": sponsored_response["token"]
-        })
-
-    return suggestions
-```
-
-### 2. Search Results Page
-
-```python
-def render_search_results(query, user_id):
-    """Render search results with sponsored content"""
-
-    # Get regular search results
-    results = perform_search(query)
-
-    # Get sponsored search prompt for related queries
-    sponsored_response = get_sponsored_search_prompt(
-        user_id=user_id,
-        metadata={
-            "search_query": query,
-            "category": infer_category(query)
-        }
-    )
-
-    # Render results
-    render_results(results)
-
-    # Add sponsored search suggestion
-    if sponsored_response:
-        render_sponsored_search_suggestion(sponsored_response)
-```
-
-### 3. Conversational Search
-
-```python
-def handle_search_intent_in_chat(user_message, user_id, chat_id):
-    """Handle search intent within a conversation"""
-
-    # Detect search intent
-    if contains_search_intent(user_message):
-        # Get sponsored search prompt
-        sponsored_response = get_sponsored_search_prompt(
-            user_id=user_id,
-            metadata={
-                "conversation_context": user_message,
-                "search_intent": extract_search_intent(user_message)
-            }
-        )
-
-        if sponsored_response:
-            # Present as a natural follow-up question
-            bot_response = f"I can help you search for that. {sponsored_response['prompt']}"
-            return bot_response, sponsored_response["token"]
-
-    return handle_regular_chat(user_message), None
-```
-
-## Error Handling
-
-Always implement comprehensive error handling:
-
-```python
-def get_sponsored_search_prompt(user_id, metadata=None):
-    """Get sponsored search prompt with error handling"""
-
-    payload = {
-        "userId": user_id,
-        "production": True
-    }
-
-    if metadata:
-        payload["metaData"] = metadata
-
-    try:
-        response = requests.post(
-            "https://dev.thrads.ai/api/v1/search/get-ad/",
-            json=payload,
-            headers=headers,
-            timeout=10
-        )
-        response.raise_for_status()
-
-        data = response.json()
-
-        if data.get("status") == "success" and data.get("data"):
-            return data["data"]
-        else:
-            # No ad available or API error
-            print(f"No sponsored search available: {data.get('message', 'Unknown error')}")
-            return None
-
-    except requests.exceptions.RequestException as e:
-        print(f"Request failed: {e}")
-        return None
-    except ValueError as e:
-        print(f"Invalid JSON response: {e}")
-        return None
-```
-
-## Integration Workflow
-
-1. **Identify Search Context**: Determine when and where to show sponsored search prompts
-2. **Call the API**: Request sponsored search prompts with relevant metadata
-3. **Display Suggestions**: Show sponsored search prompts alongside regular suggestions
-4. **Track Interactions**: Monitor user clicks and searches for feedback
-5. **Optimize**: Use feedback data to improve targeting and relevance
-
-## Common Response Format
-
-All endpoints return responses with this structure:
-
-```json
-{
-    "apiVersion": "0.1.0",
-    "requestId": "<uuid>",
-    "timestamp": "<ISO timestamp>",
-    "docsUrl": "https://preview-docs.thrads.ai/",
-    "totalTime": "<processing_time>",
-    "status": "success" | "error",
-    "message": "...",
-    "data": "<payload>",
-    "error": { ... }   // only present for error responses
-}
-```
-
-## Authentication
-
-All requests require an API key in the header:
-
-```python
-headers = {
-    "thrads-api-key": "YOUR_API_KEY",
-    "Content-Type": "application/json"
-}
-```
-
-Missing or invalid keys result in standard error responses.
-
-## Rate Limits and Performance
-
-- Monitor the `totalTime` field to track API performance
-- Implement proper error handling for network timeouts and API errors
-- Use `production: true` for live traffic to enable proper token generation
-- Use `production: false` for testing to avoid skewing analytics
-- Cache responses when appropriate to reduce API calls
-
-## Advanced Features
-
-### Custom Search Length
-
-Control the length of sponsored search prompts:
+Use `adFrequencyLimit` and `conversationOffset` to prevent ad fatigue:
 
 ```python
 payload = {
     "userId": "user123",
-    "metaData": {"category": "electronics"},
-    "max_length": 50,  # Shorter prompts for mobile
-    "production": True
-}
-```
-
-### Keyword-Only Mode
-
-Get just the keywords without the natural language prompt:
-
-```python
-payload = {
-    "userId": "user123",
-    "metaData": {"category": "home decor"},
-    "return_keywords_search": True,
+    "chatId": "chat456",
+    "content": content,
+    "adFrequencyLimit": 2,  # Maximum of 1 ad every 2 turns
+    "conversationOffset": 5,  # Wait for 5 turns before showing ads
     "production": True
 }
 
-# Use the "keyword_search" field from the response
 ```
+### 3. **Managing Response Delays**
+   
+   In rare cases, the Thrads API response might be delayed (typically between 0.5-0.8 seconds). During this time, the user may begin typing a new question. **We recommend to have some logic in place to suppress the ad render if that arrives late.**
 
-For detailed API specifications, please refer to the [API Reference](/api-reference/endpoint/search).
+
+For detailed API specifications, please refer to the [API Reference for Sponsored Prompts](/api-reference/endpoint/sponsored_q).

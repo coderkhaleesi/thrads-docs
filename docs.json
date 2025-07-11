@@ -45,12 +45,6 @@
         "tab": "Guides",
         "groups": [
           {
-            "group": "Quickstart",
-            "pages": [
-              "guides/quickstart"
-            ]
-          },
-          {
             "group": "Integration Guides",
             "pages": [
               "guides/sponsored_messages_guide",
@@ -61,7 +55,6 @@
           {
             "group": "Vibe Integration ✌️",
             "pages": [
-              "guides/vibe_integration_context",
               "guides/vibe_integration_prompts"
             ]
           }
