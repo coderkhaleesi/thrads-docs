@@ -1,6 +1,6 @@
 ---
-title: 'Sponsored Search Integration'
-description: 'Learn how to integrate sponsored search into your application.'
+title: "Sponsored Search Integration"
+description: "Learn how to integrate sponsored search into your application."
 ---
 
 # When to use sponsored search
@@ -9,8 +9,9 @@ Sponsored search uses contextual information to generate a suggested sponsored p
 If the user clicks you get the moeny.
 
 Sponsored search has two main use cases:
-- Traditional search bar: a suggested prompt is provided and can be shown as a suggested search in the search bar. 
-The ensdpoint also returns the equivalent "keyword search" which will be used by your backend to do the actual search.
+
+- Traditional search bar: a suggested prompt is provided and can be shown as a suggested search in the search bar.
+  The ensdpoint also returns the equivalent "keyword search" which will be used by your backend to do the actual search.
 
 ![Alt text describing the image](/images/thefork.png)
 
@@ -21,10 +22,13 @@ The ensdpoint also returns the equivalent "keyword search" which will be used by
 ## Production vs. Sandbox Mode
 
 <Note intent="warning">
-  **Important:** When integrating sponsored messages, it's crucial to distinguish between production and sandbox (non-production) environments.
-  - In **sandbox mode** (`production=False`), ads are returned for testing purposes but are **not counted for monetization**.
-  - In **production mode** (`production=True`), ads are live and contribute to monetization.
-  Always ensure `production=True` is used *only* in your live production environment. For all testing and development, set `production=False`.
+  **Important:** When integrating sponsored messages, it's crucial to
+  distinguish between production and sandbox (non-production) environments. - In
+  **sandbox mode** (`production=False`), ads are returned for testing purposes
+  but are **not counted for monetization**. - In **production mode**
+  (`production=True`), ads are live and contribute to monetization. Always
+  ensure `production=True` is used *only* in your live production environment.
+  For all testing and development, set `production=False`.
 </Note>
 
 ## Using Sponsored Prompts
@@ -43,6 +47,7 @@ Sponsored prompts can be incorporated into your AI conversations in two primary 
     - **Unaffected by `conversationalOffset` and `adFrequency` and `force`:** These parameters do not influence the behavior of opener prompts.
 
     **Code Example:**
+
 <CodeGroup>
 
 ```python Python
@@ -68,19 +73,19 @@ print(response.text)
 const url = "https://dev.thrads.ai/api/v1/prompt/get-ad/";
 
 const payload = {
-    "userId": "123",
-    "chatId": "123"
+  userId: "123",
+  chatId: "123",
 };
 
 const headers = {
-    "Thrads-Api-Key": "YOUR_API_KEY",
-    "Content-Type": "application/json"
+  "Thrads-Api-Key": "YOUR_API_KEY",
+  "Content-Type": "application/json",
 };
 
 const response = await fetch(url, {
-    method: "POST",
-    headers: headers,
-    body: JSON.stringify(payload)
+  method: "POST",
+  headers: headers,
+  body: JSON.stringify(payload),
 });
 
 const result = await response.text();
@@ -98,12 +103,14 @@ console.log(result);
     - **Context is Crucial:** Call this endpoint after each AI-generated response.
     <Note intent="warning">
     **Important:** You must call the endpoint at every turn—even if the ad isn't wanted (configurable via settings like `adFrequency`, explained below). This enables conversation tracking, ensures relevant follow-ups, and maintains ad effectiveness. Skipping it degrades performance and monetization.
+
    </Note>
 
     - **Control Ad Frequency:** Manage the number of ads shown using the `adFrequency` and `conversationalOffset` parameters.
     - **`force` Parameter:** Use the `force` parameter if you need to override default frequency settings for specific scenarios.
 
     **Code Example:**
+
 <CodeGroup>
 
 ```python Python
@@ -137,27 +144,27 @@ print(response.text)
 const url = "https://dev.thrads.ai/api/v1/prompt/get-ad/";
 
 const payload = {
-    "production": true,
-    "conversationOffset": 2,
-    "adFrequencyLimit": 2,
-    "userId": "123",
-    "chatId": "123",
-    "userRegion": "US",
-    "content": {
-        "user": "User message",
-        "chatbot": "Bot message"
-    }
+  production: true,
+  conversationOffset: 2,
+  adFrequencyLimit: 2,
+  userId: "123",
+  chatId: "123",
+  userRegion: "US",
+  content: {
+    user: "User message",
+    chatbot: "Bot message",
+  },
 };
 
 const headers = {
-    "Thrads-Api-Key": "YOUR_API_KEY",
-    "Content-Type": "application/json"
+  "Thrads-Api-Key": "YOUR_API_KEY",
+  "Content-Type": "application/json",
 };
 
 const response = await fetch(url, {
-    method: "POST",
-    headers: headers,
-    body: JSON.stringify(payload)
+  method: "POST",
+  headers: headers,
+  body: JSON.stringify(payload),
 });
 
 const result = await response.text();
@@ -191,7 +198,6 @@ This is the general recommended flow for the integration.
     Handle it just as explained below
   </Step>
 </Steps>
-
 
   </Tab>
 </Tabs>
@@ -240,13 +246,13 @@ print(response.text)
 ```javascript JavaScript
 const url = "https://api.thrads.ai/api/v1/prompt/click/";
 
-const payload = {"token": "<string>"};
-const headers = {"Content-Type": "application/json"};
+const payload = { token: "<string>" };
+const headers = { "Content-Type": "application/json" };
 
 const response = await fetch(url, {
-    method: "POST",
-    headers: headers,
-    body: JSON.stringify(payload)
+  method: "POST",
+  headers: headers,
+  body: JSON.stringify(payload),
 });
 
 const result = await response.text();
@@ -288,9 +294,9 @@ payload = {
 }
 
 ```
-### 3. **Managing Response Delays**
-   
-   In rare cases, the Thrads API response might be delayed (typically between 0.5-0.8 seconds). During this time, the user may begin typing a new question. **We recommend to have some logic in place to suppress the ad render if that arrives late.**
 
+### 3. **Managing Response Delays**
+
+In rare cases, the Thrads API response might be delayed (typically between 0.5-0.8 seconds). During this time, the user may begin typing a new question. **We recommend to have some logic in place to suppress the ad render if that arrives late.**
 
 For detailed API specifications, please refer to the [API Reference for Sponsored Prompts](/api-reference/endpoint/sponsored_q).
