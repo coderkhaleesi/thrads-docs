@@ -63,6 +63,11 @@
         "summary": "Get Sponsored Search Prompt",
         "description": "",
         "operationId": "get_sponsored_search_prompt_api_v1_search_get_ad__post",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -209,6 +214,11 @@
         "summary": "Get Sponsored Chatbot Prompt",
         "description": "",
         "operationId": "get_sponsored_chatbot_prompt_api_v1_prompt_get_ad__post",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -355,6 +365,11 @@
         "summary": "Get Sponsored Message",
         "description": "",
         "operationId": "get_sponsored_message_api_v1_message_get_ad__post",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -495,6 +510,14 @@
     }
   },
   "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "thrads-api-key",
+        "description": "API key for authenticating requests to the Thrads API. Get your API key from the Thrads Platform at https://platform.thrads.ai"
+      }
+    },
     "schemas": {
       "HTTPValidationError": {
         "properties": {
