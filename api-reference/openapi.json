@@ -5,6 +5,12 @@
     "description": "Thrads API",
     "version": "0.0.1"
   },
+  "servers": [
+    {
+      "url": "https://dev.thrads.ai",
+      "description": "Development API server"
+    }
+  ],
   "paths": {
     "/health": {
       "get": {
