@@ -1,0 +1,252 @@
+---
+title: "Sponsored Query Integration"
+description: "Learn how to integrate sponsored query into your application."
+---
+
+# When to Use Sponsored Query
+
+Sponsored query uses contextual information to generate a suggested sponsored query (i.e. search/prompt) for the user.
+If the user clicks, you get the money.
+
+**Sponsored query has two main use cases:**
+
+- **Traditional search bar**: A suggested query is provided and can be shown as a suggested query (i.e. search) in the search bar.
+  The endpoint also returns the equivalent "keyword search" which will be used by your backend to perform the actual query.
+
+![Alt text describing the image](/images/thefork.png)
+*Conceptual mock-up example using [The Fork](https://thefork.com) interface showing how sponsored query suggestions could appear in a restaurant query platform where users can discover new dining options.*
+
+- **One-Shot Generative Platforms**: Platforms where the user sends a query (i.e. prompt) to generate text or multimodal output.
+
+![Alt text describing the image](/images/suno.png)
+*Conceptual mock-up example using [Suno.ai](https://suno.ai) interface showing how sponsored query (i.e. prompt) suggestions could appear in a music generation platform where users enter text prompts to create songs.*
+
+## Production vs. Sandbox Mode
+
+<Note intent="warning">
+  **Important:** When integrating sponsored queries, it's crucial to
+  distinguish between production and sandbox (non-production) environments. - In
+  **sandbox mode** (`production=False`), ads are returned for testing purposes
+  but are **not counted for monetization**. - In **production mode**
+  (`production=True`), ads are live and contribute to monetization. Always
+  ensure `production=True` is used *only* in your live production environment.
+  For all testing and development, set `production=False`.
+</Note>
+
+## Using Sponsored Query
+
+Sponsored queries can be incorporated into the two aforementioned kind of platforms.
+
+<Tabs>
+  <Tab title="Traditional Search Bar">
+    ### Sponsored Query in Traditional Search Bars
+
+    Sponsored query returns a sponsored query to display in your search bar.
+
+    **Key Points:**
+    - **Tailored for Your App:** The API will provide a sponsored query suitable for your application.
+    - **Make sure to set 'return_search_keywords' to true:** This will make the endpoint also return the equivalent of the query content as a keyword search which you can use to retrieve results in your backend.
+
+    **Code Example:**
+
+<CodeGroup>
+
+```python Python
+import requests
+
+url = "https://dev.thrads.ai/api/v1/query/get-ad/"
+
+payload = {
+    "userId": "123",
+    "return_search_keywords": True
+}
+headers = {
+    "Thrads-Api-Key": "YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+
+response = requests.request("POST", url, json=payload, headers=headers)
+
+print(response.text)
+```
+
+```javascript JavaScript
+const url = "https://dev.thrads.ai/api/v1/query/get-ad/";
+
+const payload = {
+  userId: "123",
+  return_search_keywords: true,
+};
+
+const headers = {
+  "Thrads-Api-Key": "YOUR_API_KEY",
+  "Content-Type": "application/json",
+};
+
+const response = await fetch(url, {
+  method: "POST",
+  headers: headers,
+  body: JSON.stringify(payload),
+});
+
+const result = await response.text();
+console.log(result);
+```
+
+</CodeGroup>
+  </Tab>
+  <Tab title="One-Shot Generative Platform">
+    ### Sponsored Query in One-Shot Generative Platform
+
+    You can use the sponsored query endpoint to generate a sponsored query (i.e. prompt) to show as a suggested query as ghost text or other preferred UI choice.
+
+    **Key Points:**
+    - **Tailored for Your App:** The API will provide a sponsored query suitable for your application.
+
+    **Code Example:**
+
+<CodeGroup>
+
+```python Python
+import requests
+
+url = "https://dev.thrads.ai/api/v1/query/get-ad/"
+
+payload = {
+    "userId": "123",
+}
+headers = {
+    "Thrads-Api-Key": "YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+
+response = requests.request("POST", url, json=payload, headers=headers)
+
+print(response.text)
+```
+
+```javascript JavaScript
+const url = "https://dev.thrads.ai/api/v1/query/get-ad/";
+
+const payload = {
+  userId: "123",
+};
+
+const headers = {
+  "Thrads-Api-Key": "YOUR_API_KEY",
+  "Content-Type": "application/json",
+};
+
+const response = await fetch(url, {
+  method: "POST",
+  headers: headers,
+  body: JSON.stringify(payload),
+});
+
+const result = await response.text();
+console.log(result);
+```
+
+</CodeGroup>
+  </Tab>
+</Tabs>
+
+## Handling Feedback Tracking
+
+To ensure accurate monetization and analytics, you must track user feedback on sponsored queries.
+
+
+
+<Note intent="warning">
+    **Important:** The user will always either click on the sponsored query or type their own query. In both cases, the /feedback endpoint must be called.
+    If the user clicked, send it with the token and 'clicked':true, otherwise with the token and populated 'user_search'. 
+    The user search is important to guarantee that over time the sponsored queries are targeted for the user, which ultimately enhances the user experience and your monetization.
+</Note>
+
+<Steps>
+  <Step title="Receive the Token">
+    The sponsored query endpoint returns a unique `token` along with the sponsored query. Store this token.
+  </Step>
+  <Step title="Detect User Interaction">
+    When a user clicks or taps on the displayed sponsored query, or when the user types a different query instead.
+  </Step>
+     <Step title="Send Click Confirmation">
+    Immediately send a POST request to the `/api/v1/query/feedback/` endpoint. Include the `token` (received in Step 1) in the JSON body of your request.
+
+    ```json
+    {
+      "token": "THE_UNIQUE_TOKEN_RECEIVED",
+      "clicked": true
+    }
+    ```
+
+    or 
+
+    ```json
+    {
+      "token": "THE_UNIQUE_TOKEN_RECEIVED",
+      "user_search": "<ACTUAL USER QUERY>"
+    }
+    ```
+
+  </Step>
+  <Step title="Receive Reward Confirmation">
+    A successful POST request to the feedback tracking endpoint will record the click and associate the reward.
+  </Step>
+
+</Steps>
+
+**Code Example for Click Tracking:**
+
+<CodeGroup>
+
+```python Python
+import requests
+
+url = "https://dev.thrads.ai/api/v1/query/feedback/"
+
+payload = {"token": "<string>", "clicked": "<boolean>"}
+headers = {"Content-Type": "application/json"}
+
+response = requests.request("POST", url, json=payload, headers=headers)
+
+print(response.text)
+```
+
+```javascript JavaScript
+const url = "https://dev.thrads.ai/api/v1/query/feedback/";
+
+const payload = { "token": "<string>", "clicked": "<boolean>"};
+const headers = { "Content-Type": "application/json" };
+
+const response = await fetch(url, {
+  method: "POST",
+  headers: headers,
+  body: JSON.stringify(payload),
+});
+
+const result = await response.text();
+console.log(result);
+```
+
+</CodeGroup>
+
+## Best Practices
+
+### 1. Use Metadata for Better Targeting
+
+```python
+payload = {
+    "userId": "user123",
+    "metaData": {
+        "user_gender": "Male"
+    },
+    "production": True
+}
+```
+
+### 2. **Managing Response Delays**
+
+In rare cases, the Thrads API response might be delayed (typically between 0.5-0.8 seconds). During this time, the user may begin typing a new query. **We recommend having some logic in place to suppress the ad render if it arrives late and it clashes with your UI choice.**
+
+For detailed API specifications, please refer to the [API Reference for Sponsored Query](/api-reference/endpoint/query).

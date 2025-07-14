@@ -33,10 +33,10 @@
             ]
           },
           {
-            "group": "Sponsored Search",
+            "group": "Sponsored Query",
             "pages": [
-              "api-reference/endpoint/search",
-              "api-reference/endpoint/search_feedback"
+              "api-reference/endpoint/query",
+              "api-reference/endpoint/query_feedback"
             ]
           }
         ]
@@ -48,7 +48,8 @@
             "group": "Integration Guides",
             "pages": [
               "guides/sponsored_messages_guide",
-              "guides/sponsored_prompts_guide"
+              "guides/sponsored_prompts_guide",
+              "guides/sponsored_query_guide"
             ]
           },
           {

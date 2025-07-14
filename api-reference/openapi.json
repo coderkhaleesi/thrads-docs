@@ -54,15 +54,15 @@
         }
       }
     },
-    "/api/v1/search/get-ad/": {
+    "/api/v1/query/get-ad/": {
       "post": {
         "tags": [
-          "Search V1",
-          "sponsored-search-prompt"
+          "Query V1",
+          "sponsored-query-prompt"
         ],
-        "summary": "Get Sponsored Search Prompt",
+        "summary": "Get Sponsored Query Prompt",
         "description": "",
-        "operationId": "get_sponsored_search_prompt_api_v1_search_get_ad__post",
+        "operationId": "get_sponsored_query_prompt_api_v1_query_get_ad__post",
         "security": [
           {
             "ApiKeyAuth": []
@@ -132,15 +132,15 @@
         }
       }
     },
-    "/api/v1/search/feedback/": {
+    "/api/v1/query/feedback/": {
       "post": {
         "tags": [
-          "Search V1",
-          "sponsored-search-feedback"
+          "Query V1",
+          "sponsored-query-feedback"
         ],
-        "summary": "Submit Sponsored Search Feedback",
+        "summary": "Submit Sponsored Query Feedback",
         "description": "",
-        "operationId": "sponsored_search_feedback_api_v1_search_feedback__post",
+        "operationId": "sponsored_query_feedback_api_v1_query_feedback__post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -646,18 +646,6 @@
             "title": "Production",
             "description": "Whether this is a production request (true) or sandbox/testing (false). Only production requests count for monetization.",
             "default": false
-          },
-          "max_length": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Max Length",
-            "description": "Maximum length of the generated prompt text in characters"
           }
         },
         "additionalProperties": false,
@@ -777,12 +765,12 @@
           "token": {
             "type": "string",
             "title": "Token",
-            "description": "Signed token from the original search ad response for secure feedback attribution"
+            "description": "Signed token from the original query ad response for secure feedback attribution"
           },
           "clicked": {
             "type": "boolean",
             "title": "Clicked",
-            "description": "Whether the user clicked on the sponsored search result or suggestion"
+            "description": "Whether the user clicked on the sponsored query result or suggestion"
           },
           "user_search": {
             "anyOf": [
@@ -794,7 +782,7 @@
               }
             ],
             "title": "User Search",
-            "description": "The actual search query performed by the user (optional, used when user didn't click the suggestion)"
+            "description": "The actual query query performed by the user (optional, used when user didn't click the suggestion)"
           }
         },
         "additionalProperties": false,
@@ -804,14 +792,14 @@
           "clicked"
         ],
         "title": "SponsoredSearchFeedbackRequest",
-        "description": "Request model for submitting feedback on sponsored search results with click tracking and optional search context"
+        "description": "Request model for submitting feedback on sponsored query results with click tracking and optional query context"
       },
       "SponsoredSearchPromptRequest": {
         "properties": {
           "userId": {
             "type": "string",
             "title": "User ID",
-            "description": "Unique identifier for the user requesting the sponsored search prompt. Must be the same for the same user across all conversations."
+            "description": "Unique identifier for the user requesting the sponsored query prompt. Must be the same for the same user across all conversations."
           },
           "metaData": {
             "anyOf": [
@@ -826,14 +814,14 @@
               }
             ],
             "title": "Metadata",
-            "description": "Additional context about user interests, search intent, or targeting preferences"
+            "description": "Additional context about user interests, query intent, or targeting preferences"
           },
           "max_length": {
             "type": "integer",
+            "minimum": 25,
             "maximum": 4096,
-            "exclusiveMinimum": 0,
             "title": "Max Length",
-            "description": "Maximum length of the generated search prompt in characters",
+            "description": "Maximum length of the generated query in characters",
             "default": 1024
           },
           "production": {
@@ -855,7 +843,7 @@
           "userId"
         ],
         "title": "SponsoredSearchPromptRequest",
-        "description": "Request model for sponsored search prompts with optional keyword suggestions and targeting options"
+        "description": "Request model for sponsored query prompts with optional keyword suggestions and targeting options"
       },
       "APIResponse": {
         "properties": {
@@ -969,7 +957,7 @@
           "creative": {
             "type": "string",
             "title": "Creative",
-            "description": "The marketing creative content or search result text to display"
+            "description": "The marketing creative content or query result text to display"
           },
           "prod_name": {
             "type": "string",
