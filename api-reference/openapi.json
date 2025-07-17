@@ -7,8 +7,12 @@
   },
   "servers": [
     {
-      "url": "https://dev.thrads.ai",
+      "url": "http://localhost:8080",
       "description": "Development API server"
+    },
+    {
+      "url": "https://dev.thrads.ai",
+      "description": "Production API server"
     }
   ],
   "paths": {
@@ -919,7 +923,7 @@
           "img_url": {
             "type": "string",
             "title": "Image URL",
-            "description": "URL to the product image"
+            "description": "URL to the product image. The image is a png file with aspect ratio 1:1 and resolution of 224x224"
           },
           "prod_url": {
             "type": "string",
