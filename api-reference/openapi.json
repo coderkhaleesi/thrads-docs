@@ -7,10 +7,6 @@
   },
   "servers": [
     {
-      "url": "http://localhost:8080",
-      "description": "Development API server"
-    },
-    {
       "url": "https://dev.thrads.ai",
       "description": "Production API server"
     }
