@@ -283,20 +283,20 @@
         }
       }
     },
-    "/api/v1/prompt/click/": {
+    "/api/v1/prompt/feedback/": {
       "post": {
         "tags": [
           "Prompt V1",
-          "sponsored-prompt-click"
+          "sponsored-prompt-feedback"
         ],
-        "summary": "Register Sponsored Prompt Click",
+        "summary": "Submit Sponsored Prompt Feedback",
         "description": "",
-        "operationId": "sponsored_chatbot_prompt_click_api_v1_prompt_click__post",
+        "operationId": "sponsored_chatbot_prompt_feedback_api_v1_prompt_feedback__post",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SponsoredChatbotPromptClickRequest"
+                "$ref": "#/components/schemas/SponsoredChatbotPromptFeedbackRequest"
               }
             }
           },
@@ -515,7 +515,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "thrads-api-key",
-        "description": "API key for authenticating requests to the Thrads API. Get your API key from the Thrads Platform at https://platform.thrads.ai"
+        "description": "API key for authenticating requests to the Thrads API. You can obtain your API key from the [Thrads Platform](https://platform.thrads.ai) dashboard."
       }
     },
     "schemas": {
@@ -532,47 +532,63 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
-      "SponsoredChatbotPromptClickRequest": {
+      "SponsoredChatbotPromptFeedbackRequest": {
         "properties": {
-          "token": {
+          "sponsored_prompt_id": {
             "type": "string",
-            "title": "Token",
-            "description": "Signed token from the original sponsored prompt response for secure click tracking and analytics"
+            "title": "Sponsored Prompt ID",
+            "description": "ID of the sponsored prompt the feedback refers to"
+          },
+          "clicked": {
+            "type": "boolean",
+            "title": "Clicked",
+            "description": "Whether the user clicked the sponsored prompt link"
+          },
+          "number_follow_ups": {
+            "type": "integer",
+            "title": "Number of Follow Ups",
+            "description": "How many follow-up messages occurred after showing the prompt"
+          },
+          "is_sponsor_mentioned": {
+            "type": "boolean",
+            "title": "Is Sponsor Mentioned",
+            "description": "Whether the sponsor was mentioned in the subsequent conversation"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary",
+            "description": "Short summary of the user interaction or feedback context"
           }
         },
         "additionalProperties": false,
         "type": "object",
         "required": [
-          "token"
+          "sponsored_prompt_id",
+          "clicked",
+          "number_follow_ups",
+          "is_sponsor_mentioned",
+          "summary"
         ],
-        "title": "SponsoredChatbotPromptClickRequest",
-        "description": "Request model for tracking clicks on sponsored chatbot prompts using secure tokens"
+        "title": "SponsoredChatbotPromptFeedbackRequest",
+        "description": "Request model for submitting feedback on sponsored chatbot prompts"
       },
       "SponsoredChatbotPromptRequest": {
         "properties": {
           "userId": {
-            "type": "string",
-            "maxLength": 100,
+            "anyOf": [
+              { "type": "string" },
+              { "type": "null" }
+            ],
             "title": "User ID",
-            "description": "Unique identifier for the user requesting the sponsored prompt. Must be the same for the same user across all conversations."
+            "description": "Optional unique identifier for the user. Provide the same value for the same user across conversations."
           },
           "chatId": {
-            "type": "string",
-            "maxLength": 100,
-            "title": "Chat ID",
-            "description": "Unique identifier for the chat session or conversation. Must be the same across the same conversation."
-          },
-          "userRegion": {
             "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+              { "type": "string" },
+              { "type": "null" }
             ],
-            "title": "User Region",
-            "description": "Geographic region of the user for localized ad targeting. Should be an ISO 3166-1 alpha-2 country code (e.g., 'US', 'GB', 'DE', 'JP')"
+            "title": "Chat ID",
+            "description": "Optional identifier for the chat session or conversation. Use the same value within the same conversation."
           },
           "content": {
             "anyOf": [
@@ -584,53 +600,64 @@
                     "description": "The user's message in the conversation"
                   },
                   "chatbot": {
-                    "type": "string", 
+                    "type": "string",
                     "description": "The chatbot's response message"
                   }
                 },
                 "required": ["user", "chatbot"],
                 "additionalProperties": false
               },
-              {
-                "type": "null"
-              }
+              { "type": "null" }
             ],
             "title": "Content",
             "description": "Conversation context MUST contain exactly two fields: 'user' and 'chatbot', both populated with strings representing the latest message exchange"
           },
-          "metaData": {
+          "country_code": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 2,
+            "pattern": "^[A-Za-z]{2}$",
+            "title": "Country Code",
+            "description": "ISO 3166-1 alpha-2 country code (e.g., 'US', 'GB')."
+          },
+          "region": {
             "anyOf": [
-              {
-                "additionalProperties": {
-                  "type": "string"
-                },
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
+              { "type": "string" },
+              { "type": "null" }
             ],
-            "title": "Metadata",
-            "description": "Additional context about user interests, conversation topic, or targeting preferences"
+            "title": "Region",
+            "description": "Region or state (optional)."
+          },
+          "city": {
+            "anyOf": [
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "City",
+            "description": "City (optional)."
+          },
+          "os": {
+            "anyOf": [
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "OS",
+            "description": "Operating system of the client (optional)."
           },
           "force": {
             "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
+              { "type": "boolean" },
+              { "type": "null" }
             ],
             "title": "Force",
-            "description": "If set to true it forces the ad generation regardless of frequency limits or other constraints. If set to false it inhibits the ad generation. Default is set to null which does not affect the ad generation"
+            "description": "If true forces ad generation; if false inhibits it; null for default behavior."
           },
           "conversationOffset": {
             "type": "integer",
             "maximum": 20,
             "minimum": 0,
             "title": "Conversation Offset",
-            "description": "Number of conversation turns to wait before showing the first ad",
+            "description": "Number of conversation turns to wait before showing the first ad. Ignored when the sponsored prompt is used as an opener (only relevant mid-conversation).",
             "default": 2
           },
           "adFrequencyLimit": {
@@ -638,21 +665,20 @@
             "maximum": 20,
             "minimum": 0,
             "title": "Ad Frequency Limit",
-            "description": "Number of turns to wait before showing the next ad",
+            "description": "Number of turns to wait before showing the next ad. Ignored when the sponsored prompt is used as an opener (only relevant mid-conversation).",
             "default": 5
           },
           "production": {
             "type": "boolean",
             "title": "Production",
-            "description": "Whether this is a production request (true) or sandbox/testing (false). Only production requests count for monetization.",
+            "description": "Whether this is a production request (true) or sandbox/testing (false). Only production requests count for monetization. Ignored when the sponsored prompt is used as an opener (only relevant mid-conversation).",
             "default": false
           }
         },
         "additionalProperties": false,
         "type": "object",
         "required": [
-          "userId",
-          "chatId"
+          "country_code"
         ],
         "title": "SponsoredChatbotPromptRequest",
         "description": "Request model for sponsored chatbot prompts with conversation context and targeting options"
@@ -1027,10 +1053,10 @@
             "title": "Icon",
             "description": "URL to the ad icon image"
           },
-          "token": {
+          "sponsored_prompt_id": {
             "type": "string",
-            "title": "Token",
-            "description": "Secure tracking token used to record user interactions and clicks"
+            "title": "Sponsored Prompt ID",
+            "description": "ID of the sponsored prompt"
           }
         },
         "type": "object",
@@ -1038,8 +1064,7 @@
           "prompt",
           "link",
           "brand",
-          "icon",
-          "token"
+          "sponsored_prompt_id"
         ],
         "title": "SponsoredPromptData",
         "description": "AI-generated sponsored prompt with brand information and tracking capabilities for chatbot integration"

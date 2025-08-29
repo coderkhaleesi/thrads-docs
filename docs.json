@@ -29,14 +29,7 @@
             "group": "Sponsored Prompts",
             "pages": [
               "api-reference/endpoint/prompt",
-              "api-reference/endpoint/prompt_click"
-            ]
-          },
-          {
-            "group": "Sponsored Query",
-            "pages": [
-              "api-reference/endpoint/query",
-              "api-reference/endpoint/query_feedback"
+              "api-reference/endpoint/prompt_feedback"
             ]
           }
         ]
@@ -48,8 +41,7 @@
             "group": "Integration Guides",
             "pages": [
               "guides/sponsored_messages_guide",
-              "guides/sponsored_prompts_guide",
-              "guides/sponsored_query_guide"
+              "guides/sponsored_prompts_guide"
             ]
           },
           {
